@@ -9,25 +9,12 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 -- This file is a static default profile.  After your first profile is created, editing this file will do nothing.
 local ADDON_NAME, addon = ...
 local L = addon.L
-
--- taken from: https://github.com/Gethe/wow-ui-source/blob/e337b8949ffad2876ea0489d8331db2414342d32/FrameXML/CombatFeedback.lua
-do -- blizzard hiding globals?
-  SCHOOL_MASK_NONE      = 0x00;
-  SCHOOL_MASK_PHYSICAL  = 0x01;
-  SCHOOL_MASK_HOLY      = 0x02;
-  SCHOOL_MASK_FIRE      = 0x04;
-  SCHOOL_MASK_NATURE    = 0x08;
-  SCHOOL_MASK_FROST     = 0x10;
-  SCHOOL_MASK_SHADOW    = 0x20;
-  SCHOOL_MASK_ARCANE    = 0x40;
-end
-
 -- =====================================================
 -- CreateMergeSpellEntry(
 --    default,       [bool] - This specs current activated spell (only one per spec)
@@ -78,7 +65,7 @@ addon.defaults = {
       floatingCombatTextAuraFade = false,
       floatingCombatTextCombatDamage = false,
       floatingCombatTextCombatDamageAllAutos = false,
-      floatingCombatTextCombatHealing = false,
+      -- floatingCombatTextCombatHealing = false,
       -- floatingCombatTextCombatHealingAbsorbSelf = false,
       -- floatingCombatTextCombatHealingAbsorbTarget = false,
       floatingCombatTextCombatLogPeriodicSpells = false,
@@ -201,41 +188,41 @@ addon.defaults = {
           ["honorGains"]   = { enabled = false, desc = HONOR_GAINED,   default = { 0.10, 0.10, 1.00 } },
 
           ["auras"] = {
-            enabled = false, desc = L["Buffs and Debuffs"],
+            enabled = false, desc = "Buff和Debuff",
             colors = {
-              ["buffsGained"]        = { enabled = false, desc = L["Buffs Gained"],       default = { 1.00, 0.50, 0.50 } },
-              ["buffsFaded"]         = { enabled = false, desc = L["Buffs Faded"],        default = { 0.50, 0.50, 0.50 } },
-              ["debuffsGained"]      = { enabled = false, desc = L["Debuffs Gained"],     default = { 1.00, 0.10, 0.10 } },
-              ["debuffsFaded"]       = { enabled = false, desc = L["Debuffs Faded"],      default = { 0.50, 0.50, 0.50 } },
+              ["buffsGained"]        = { enabled = false, desc = "Buff获得",       default = { 1.00, 0.50, 0.50 } },
+              ["buffsFaded"]         = { enabled = false, desc = "Buff消失",        default = { 0.50, 0.50, 0.50 } },
+              ["debuffsGained"]      = { enabled = false, desc = "Debuff获得",     default = { 1.00, 0.10, 0.10 } },
+              ["debuffsFaded"]       = { enabled = false, desc = "Debuff消失",      default = { 0.50, 0.50, 0.50 } },
             },
           },
           ["dispells"] = {
-            enabled = false, desc = L["Dispell Buffs and Debuffs"],
+            enabled = false, desc = "驱散Buff和Debuff",
             colors = {
-              ["dispellBuffs"]       = { enabled = false, desc = "Buffs",              default = { 0.00, 1.00, 0.50 } },
-              ["dispellDebuffs"]     = { enabled = false, desc = "Debuffs",            default = { 1.00, 0.00, 0.50 } },
-              ["dispellStolen"]      = { enabled = false, desc = L["Spell Stolen"],       default = { 0.31, 0.71, 1.00 } },
+              ["dispellBuffs"]       = { enabled = false, desc = "Buff",              default = { 0.00, 1.00, 0.50 } },
+              ["dispellDebuffs"]     = { enabled = false, desc = "Debuff",            default = { 1.00, 0.00, 0.50 } },
+              ["dispellStolen"]      = { enabled = false, desc = ACTION_SPELL_STOLEN,       default = { 0.31, 0.71, 1.00 } },
             },
           },
           ["reputation"] = {
-            enabled = false, desc = L["Reputation"],
+            enabled = false, desc = "声望",
             colors = {
-              ["reputationGain"]     = { enabled = false, desc = L["Reputation Gained"],  default = { 0.10, 0.10, 1.00 } },
-              ["reputationLoss"]     = { enabled = false, desc = L["Reputation Lost"],    default = { 1.00, 0.10, 0.10 } },
+              ["reputationGain"]     = { enabled = false, desc = "获得声望",  default = { 0.10, 0.10, 1.00 } },
+              ["reputationLoss"]     = { enabled = false, desc = "失去声望",    default = { 1.00, 0.10, 0.10 } },
             },
           },
           ["combat"] = {
-            enabled = false, desc = L["Combat Status"],
+            enabled = false, desc = "战斗状态",
             colors = {
-              ["combatEntering"]     = { enabled = false, desc = L["Entering Combat"],    default = { 1.00, 0.10, 0.10 } },
-              ["combatLeaving"]      = { enabled = false, desc = L["Leaving Combat"],     default = { 0.10, 1.00, 0.10 } },
+              ["combatEntering"]     = { enabled = false, desc = "进入战斗",    default = { 1.00, 0.10, 0.10 } },
+              ["combatLeaving"]      = { enabled = false, desc = "离开战斗",     default = { 0.10, 1.00, 0.10 } },
             },
           },
           ["lowResources"] = {
-            enabled = false, desc = L["Low Resources"],
+            enabled = false, desc = "低状态",
             colors = {
-              ["lowResourcesHealth"] = { enabled = false, desc = L["Low Health"],         default = { 1.00, 0.10, 0.10 } },
-              ["lowResourcesMana"]   = { enabled = false, desc = L["Low Mana"],           default = { 1.00, 0.10, 0.10 } },
+              ["lowResourcesHealth"] = { enabled = false, desc = "低生命值",         default = { 1.00, 0.10, 0.10 } },
+              ["lowResourcesMana"]   = { enabled = false, desc = "低法力值",           default = { 1.00, 0.10, 0.10 } },
             },
           },
         },
@@ -243,7 +230,6 @@ addon.defaults = {
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -297,16 +283,16 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
         colors = {
-          ['melee']         = { enabled = false, desc = L["Auto Attack Damage"], default = { 1.00, 1.00, 1.00 } },
-          ['misstypesOut']  = { enabled = false, desc = L["Missed Attacks"],     default = { 0.50, 0.50, 0.50 } },
-          ['shieldOut']     = { enabled = false, desc = L["Absorbs"],            default = { 0.60, 0.65, 1.00 } },
+          ['melee']         = { enabled = false, desc = "自动攻击伤害", default = { 1.00, 1.00, 1.00 } },
+          ['misstypesOut']  = { enabled = false, desc = "未命中攻击",     default = { 0.50, 0.50, 0.50 } },
+          ['shieldOut']     = { enabled = false, desc = "吸收",            default = { 0.60, 0.65, 1.00 } },
 
           ['healing'] = {
-            enabled = false, desc = L["Healing Color Overrides"],
+            enabled = false, desc = "治疗颜色重写",
             colors = {
-              ['healingOut']         = { enabled = false, desc = L["Healing"],            default = { 0.10, 0.75, 0.10 } },
-              ['healingOutCritical'] = { enabled = false, desc = L["Healing (Critical)"], default = { 0.10, 1.00, 0.10 } },
-              ['healingOutPeriodic'] = { enabled = false, desc = L["Healing (Periodic)"], default = { 0.10, 0.50, 0.10 } },
+              ['healingOut']         = { enabled = false, desc = "治疗",            default = { 0.10, 0.75, 0.10 } },
+              ['healingOutCritical'] = { enabled = false, desc = "治疗(暴击)", default = { 0.10, 1.00, 0.10 } },
+              ['healingOutPeriodic'] = { enabled = false, desc = "治疗(周期)", default = { 0.10, 0.50, 0.10 } },
             }
           },
         },
@@ -366,7 +352,6 @@ addon.defaults = {
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -380,14 +365,13 @@ addon.defaults = {
         ["visibilityTime"] = 5,
 
         -- special tweaks
-        ["enableAutoAttack_Outgoing"] = true, -- OLD: enableAutoAttack
-        ["enablePetAutoAttack_Outgoing"] = true,
-
         ["enableOutDmg"] = true,
         ["enableOutHeal"] = true,
         ["enableOutAbsorbs"] = true,
         ["enablePetDmg"] = true,
+        ["enablePetAutoAttack"] = true,
         ["enableVehicleDmg"] = true,
+        ["enableAutoAttack"] = true,
         ["enableDotDmg"] = true,
         ["enableHots"] = true,
         ["enableImmunes"] = true,
@@ -398,7 +382,6 @@ addon.defaults = {
 
         ["enableOverhealing"] = true,
         ["enableOverhealingFormat"] = false,
-        ["enableOverhealingSubtraction"] = false,
         ["overhealingPrefix"] = " |cffFFFFFF(O: ",
         ["overhealingPostfix"] = ")|r",
       },
@@ -432,7 +415,7 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
         colors = {
-          ['meleeCrit']  = { enabled = false, desc = L["Auto Attack Damage (Critical)"], default = { 1.00, 1.00, 0.00 } },
+          ['meleeCrit']  = { enabled = false, desc = "自动攻击伤害(暴击)", default = { 1.00, 1.00, 0.00 } },
         },
 
         -- name formatting
@@ -495,7 +478,6 @@ addon.defaults = {
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -509,8 +491,8 @@ addon.defaults = {
         ["visibilityTime"] = 5,
 
         -- special tweaks
-        ["enableAutoAttack_Critical"] = true, -- OLD: showSwing
-        ["prefixAutoAttack_Critical"] = true, -- OLD: prefixSwing
+        ["showSwing"] = true,
+        ["prefixSwing"] = true,
         ["petCrits"] = false,
       },
 
@@ -543,13 +525,13 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
         colors = {
-          ['damageTaken']               = { enabled = false, desc = L["Physical Damage"],          default = { 0.75, 0.10, 0.10 } },
-          ['damageTakenCritical']       = { enabled = false, desc = L["Critical Physical Damage"], default = { 1.00, 0.10, 0.10 } },
-          ['spellDamageTaken']          = { enabled = false, desc = L["Spell Damage"],             default = { 0.75, 0.30, 0.85 } },
-          ['spellDamageTakenCritical']  = { enabled = false, desc = L["Critical Spell Damage"],    default = { 0.75, 0.30, 0.85 } },
+          ['damageTaken']               = { enabled = false, desc = "物理伤害",          default = { 0.75, 0.10, 0.10 } },
+          ['damageTakenCritical']       = { enabled = false, desc = "暴击物理伤害", default = { 1.00, 0.10, 0.10 } },
+          ['spellDamageTaken']          = { enabled = false, desc = "法术伤害",             default = { 0.75, 0.30, 0.85 } },
+          ['spellDamageTakenCritical']  = { enabled = false, desc = "暴击法术伤害",    default = { 0.75, 0.30, 0.85 } },
 
           ['missTypesTaken'] = {
-            enabled = false, desc = L["Miss Types"],
+            enabled = false, desc = "未命中类型",
             colors = {
               ['missTypeMiss']    = { enabled = false, desc = MISS,   default = { 0.50, 0.50, 0.50 } },
               ['missTypeDodge']   = { enabled = false, desc = DODGE,   default = { 0.50, 0.50, 0.50 } },
@@ -565,11 +547,11 @@ addon.defaults = {
           },
 
           ['missTypesTakenPartial'] = {
-            enabled = false, desc = L["Miss Types |cff798BDD(Partials)|r"],
+            enabled = false, desc = "未命中类型|cff798BDD(部分)|r",
             colors = {
-              ['missTypeResistPartial']  = { enabled = false, desc = L["Resisted |cff798BDD(Partial)|r"], default = { 0.75, 0.50, 0.50 } },
-              ['missTypeBlockPartial']   = { enabled = false, desc = L["Blocked |cff798BDD(Partial)|r"],  default = { 0.75, 0.50, 0.50 } },
-              ['missTypeAbsorbPartial']  = { enabled = false, desc = L["Asorbed |cff798BDD(Partial)|r"],  default = { 0.75, 0.50, 0.50 } },
+              ['missTypeResistPartial']  = { enabled = false, desc = "抵抗|cff798BDD(部分)|r", default = { 0.75, 0.50, 0.50 } },
+              ['missTypeBlockPartial']   = { enabled = false, desc = "格挡|cff798BDD(部分)|r",  default = { 0.75, 0.50, 0.50 } },
+              ['missTypeAbsorbPartial']  = { enabled = false, desc = "吸收|cff798BDD(部分)|r",  default = { 0.75, 0.50, 0.50 } },
             },
           },
         },
@@ -650,7 +632,6 @@ addon.defaults = {
         ["iconsEnabled"] = true,
         ["iconsSize"] = 14,
         ["iconsEnabledAutoAttack"] = true,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -697,11 +678,11 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
         colors = {
-          ['shieldTaken']          = { enabled = false, desc = L["Shields"],          default = { 0.60, 0.65, 1.00 } },
-          ['healingTaken']         = { enabled = false, desc = L["Healing"],          default = { 0.10, 0.75, 0.10 } },
-          ['healingTakenCritical'] = { enabled = false, desc = L["Critical Healing"], default = { 0.10, 1.00, 0.10 } },
-          ['healingTakenPeriodic'] = { enabled = false, desc = L["Periodic Healing"], default = { 0.10, 0.50, 0.10 } },
-          ['healingTakenPeriodicCritical'] = { enabled = false, desc = L["Critical Periodic Healing"], default = { 0.10, 0.50, 0.10 } },
+          ['shieldTaken']          = { enabled = false, desc = "护盾",          default = { 0.60, 0.65, 1.00 } },
+          ['healingTaken']         = { enabled = false, desc = "治疗",          default = { 0.10, 0.75, 0.10 } },
+          ['healingTakenCritical'] = { enabled = false, desc = "暴击治疗", default = { 0.10, 1.00, 0.10 } },
+          ['healingTakenPeriodic'] = { enabled = false, desc = "周期治疗", default = { 0.10, 0.50, 0.10 } },
+          ['healingTakenPeriodicCritical'] = { enabled = false, desc = "暴击周期治疗", default = { 0.10, 0.50, 0.10 } },
         },
 
         -- name formatting
@@ -760,7 +741,6 @@ addon.defaults = {
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -781,8 +761,8 @@ addon.defaults = {
         ["showOnlyPetHeals"] = false,
       },
 
-      --[[class = {
-        ["enabledFrame"] = true,
+      class = {
+        ["enabledFrame"] = false,
         ["alpha"] = 100,
 
         -- position
@@ -809,7 +789,7 @@ addon.defaults = {
           ['comboPoints']     = { enabled = false, desc = "Combo Points",     default = { 1.00, 0.82, 0.00 } },
           ['comboPointsMax']  = { enabled = false, desc = "Max Combo Points", default = { 0.00, 0.82, 1.00 } },
         },
-      },]]
+      },
 
       power = {
         ["enabledFrame"] = true,
@@ -840,27 +820,24 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
 
-        -- https://github.com/Gethe/wow-ui-source/blob/e337b8949ffad2876ea0489d8331db2414342d32
-        -- /AddOns/Blizzard_CombatLog/Blizzard_CombatLog.lua#L1797
+        -- TODO: Update these ( See http://www.wowinterface.com/forums/showthread.php?t=53140 )
         colors = {
-          ['color_MANA'] = { enabled = false, desc = MANA, default = {  0.00,  0.00,  1.00 } },
-          ['color_RAGE'] = { enabled = false, desc = RAGE, default = {  1.00,  0.00,  0.00 } },
-          ['color_FURY'] = { enabled = false, desc = FURY, default = { 0.788, 0.259, 0.992 } },
-          ['color_PAIN'] = { enabled = false, desc = PAIN, default = { 1.000, 0.612, 0.000 } },
-
-          ['color_FOCUS']  = { enabled = false, desc = FOCUS,  default = { 1.00, 0.50, 0.25 } },
-          ['color_RUNES']  = { enabled = false, desc = RUNES,  default = { 0.50, 0.50, 0.50 } },
-          ['color_ENERGY'] = { enabled = false, desc = ENERGY, default = { 1.00, 1.00, 0.00 } },
-
-          ['color_CHI_POWER']            = { enabled = false, desc = CHI_POWER,            default = { 0.71, 1.00, 0.92 } },
-          ['color_HOLY_POWER']           = { enabled = false, desc = HOLY_POWER,           default = { 0.95, 0.90, 0.60 } },
-          ['color_RUNIC_POWER']          = { enabled = false, desc = RUNIC_POWER,          default = { 0.00, 0.82, 1.00 } },
-          ['color_SOUL_SHARDS']          = { enabled = false, desc = SOUL_SHARDS,          default = { 0.50, 0.32, 0.55 } },
-          ['color_LUNAR_POWER']          = { enabled = false, desc = LUNAR_POWER,          default = { 0.30, 0.52, 0.90 } },
-          ['color_INSANITY_POWER']       = { enabled = false, desc = INSANITY_POWER,       default = { 0.40, 0.00, 0.80 } },
-          ['color_MAELSTROM_POWER']      = { enabled = false, desc = MAELSTROM_POWER,      default = { 0.00, 0.50, 1.00 } },
-          ['color_ALTERNATE_POWER'] = { enabled = false, desc = ALTERNATE_POWER_TEXT, default = { 0.10, 0.10, 0.98 } },
-          ['color_ARCANE_CHARGES_POWER'] = { enabled = false, desc = ARCANE_CHARGES_POWER, default = { 0.10, 0.10, 0.98 } },
+          ['color_MANA']            = { enabled = false, desc = MANA,           default = { 0.00, 0.00, 1.00 } },
+          ['color_RAGE']            = { enabled = false, desc = RAGE,           default = { 1.00, 0.00, 0.00 } },
+          ['color_FOCUS']           = { enabled = false, desc = FOCUS,          default = { 1.00, 0.50, 0.25 } },
+          ['color_ENERGY']          = { enabled = false, desc = ENERGY,         default = { 1.00, 1.00, 0.00 } },
+          ['color_RUNES']           = { enabled = false, desc = RUNES,          default = { 0.50, 0.50, 0.50 } },
+          ['color_RUNIC_POWER']     = { enabled = false, desc = RUNIC_POWER,    default = { 0.00, 0.82, 1.00 } },
+          ['color_SOUL_SHARDS']     = { enabled = false, desc = SOUL_SHARDS,    default = { 0.50, 0.32, 0.55 } },
+          ['color_LUNAR_POWER']     = { enabled = false, desc = LUNAR_POWER,    default = { 0.30, 0.52, 0.90 } },
+          ['color_HOLY_POWER']      = { enabled = false, desc = HOLY_POWER,     default = { 0.95, 0.90, 0.60 } },
+          ['color_MAELSTROM']       = { enabled = false, desc = MAELSTROM,      default = { 0.00, 0.50, 1.00 } },
+          ['color_INSANITY']        = { enabled = false, desc = INSANITY,       default = { 0.40, 0.00, 0.80 } },
+          ['color_CHI']             = { enabled = false, desc = CHI,            default = { 0.71, 1.00, 0.92 } },
+          ['color_ARCANE_CHARGES']  = { enabled = false, desc = ARCANE_CHARGES, default = { 0.10, 0.10, 0.98 } },
+          ['color_FURY']            = { enabled = false, desc = FURY,           default = { r = 0.788, g = 0.259, b = 0.992 } },
+          ['color_PAIN']            = { enabled = false, desc = PAIN,           default = { r = 1.000, g = 0.612, b = 0.000 } },
+          ["color_ALTERNATE_POWER"] = { enabled = false, desc = ALTERNATE_RESOURCE_TEXT, default = { r = 1.00, g = 1.00, b = 1.00 } },
         },
 
         -- scrollable
@@ -891,11 +868,13 @@ addon.defaults = {
         ["disableResource_SOUL_SHARDS"]      = false,
         ["disableResource_LUNAR_POWER"]      = true,
 
-        ["disableResource_CHI_POWER"]        = true,
         ["disableResource_HOLY_POWER"]       = false,
-        ["disableResource_INSANITY_POWER"]   = false,
-        ["disableResource_MAELSTROM_POWER"]  = true,
+        ["disableResource_ALTERNATE_POWER"]  = true,
+        ["disableResource_CHI"]              = true,
+        ["disableResource_INSANITY"]         = false,
 
+        --["disableResource_OBSOLETE"]       = true,
+        --["disableResource_OBSOLETE2"]      = true,
         ["disableResource_ARCANE_CHARGES"]   = false,
         ["disableResource_FURY"]             = false,
         ["disableResource_PAIN"]             = false,
@@ -929,14 +908,13 @@ addon.defaults = {
         ["customColor"] = false,
         ["fontColor"] = { 1.00, 1.00, 1.00 },
         colors = {
-          ['spellProc']     = { enabled = false, desc = L["Spell Procs"],    default = { 1.00, 0.82, 0.00 } },
-          ['spellReactive'] = { enabled = false, desc = L["Spell Reactive"], default = { 1.00, 0.82, 0.00 } },
+          ['spellProc']     = { enabled = false, desc = "法术触发",    default = { 1.00, 0.82, 0.00 } },
+          ['spellReactive'] = { enabled = false, desc = "法术警报", default = { 1.00, 0.82, 0.00 } },
         },
 
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -981,7 +959,6 @@ addon.defaults = {
         -- icons
         ["iconsEnabled"] = true,
         ["iconsSize"] = 16,
-        ["spacerIconsEnabled"] = true,
 
         -- scrollable
         ["enableScrollable"] = false,
@@ -1001,7 +978,6 @@ addon.defaults = {
         ["showItemTotal"] = true,
         ["showCrafted"] = true,
         ["showQuest"] = true,
-        ["showPurchased"] = false,
         ["colorBlindMoney"] = false,
         ["filterItemQuality"] = 3,
       },

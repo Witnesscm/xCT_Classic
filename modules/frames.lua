@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 local build = select(4, GetBuildInfo())
@@ -46,17 +46,31 @@ local frameIndex = {
 }
 
 -- Static Title Lookup
-x.FrameTitles = {
-	["general"]		= L["General"],					-- COMBAT_TEXT_LABEL,
-	["outgoing"]	= L["Outgoing"],					-- SCORE_DAMAGE_DONE.." / "..SCORE_HEALING_DONE,
-	["critical"]	= L["Outgoing (Criticals)"],		-- TEXT_MODE_A_STRING_RESULT_CRITICAL:gsub("%(", ""):gsub("%)", ""), -- "(Critical)" --> "Critical"
-	["damage"]		= L["Damage (Incoming)"],			-- DAMAGE,
-	["healing"]		= L["Healing (Incoming)"],			-- SHOW_COMBAT_HEALING,
-	["power"]		= L["Class Power"],				-- COMBAT_TEXT_SHOW_ENERGIZE_TEXT,
-	--["class"]		= L["Combo"],						-- COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT,
-	["procs"]		= L["Special Effects (Procs)"],	-- COMBAT_TEXT_SHOW_REACTIVES_TEXT,
-	["loot"]		= L["Loot & Money"],				-- LOOT,
-}
+if GetLocale() == "zhCN" then
+	x.FrameTitles = {
+	    ["general"]		= "综合",					-- COMBAT_TEXT_LABEL,
+	    ["outgoing"]	= "伤害输出",					-- SCORE_DAMAGE_DONE.." / "..SCORE_HEALING_DONE,
+	    ["critical"]	= "伤害输出(暴击)",		-- TEXT_MODE_A_STRING_RESULT_CRITICAL:gsub("%(", ""):gsub("%)", ""), -- "(Critical)" --> "Critical"
+	    ["damage"]		= "受到伤害",			-- DAMAGE,
+	    ["healing"]		= "受到治疗",			-- SHOW_COMBAT_HEALING,
+	    ["power"]		= "职业能量",				-- COMBAT_TEXT_SHOW_ENERGIZE_TEXT,
+	    ["class"]		= "连击点",						-- COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT,
+	    ["procs"]		= "特殊效果(特效)",	-- COMBAT_TEXT_SHOW_REACTIVES_TEXT,
+	    ["loot"]		= "拾取,货币和金钱",				-- LOOT,
+    }
+else
+	x.FrameTitles = {
+	    ["general"]		= "General",					-- COMBAT_TEXT_LABEL,
+	    ["outgoing"]	= "Outgoing",					-- SCORE_DAMAGE_DONE.." / "..SCORE_HEALING_DONE,
+	    ["critical"]	= "Outgoing (Criticals)",		-- TEXT_MODE_A_STRING_RESULT_CRITICAL:gsub("%(", ""):gsub("%)", ""), -- "(Critical)" --> "Critical"
+	    ["damage"]		= "Damage (Incoming)",			-- DAMAGE,
+	    ["healing"]		= "Healing (Incoming)",			-- SHOW_COMBAT_HEALING,
+	    ["power"]		= "Class Power",				-- COMBAT_TEXT_SHOW_ENERGIZE_TEXT,
+	    ["class"]		= "Combo",						-- COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT,
+	    ["procs"]		= "Special Effects (Procs)",	-- COMBAT_TEXT_SHOW_REACTIVES_TEXT,
+	    ["loot"]		= "Loot & Money",				-- LOOT,
+    }
+end
 
 local frameTitles = x.FrameTitles
 
@@ -122,7 +136,7 @@ function x:UpdateFrames(specificFrame)
 			if x.frames[framename] then
 				f = x.frames[framename]
 			else
-				f = CreateFrame("ScrollingMessageFrame", "xCT_Plus"..framename.."Frame", UIParent, "BackdropTemplate")
+				f = CreateFrame("ScrollingMessageFrame", "xCT_Plus"..framename.."Frame", UIParent)
 				f:SetSpacing(2)
 				f:ClearAllPoints()
 				f:SetMovable(true)
@@ -158,10 +172,6 @@ function x:UpdateFrames(specificFrame)
 			else
 				f:SetFrameStrata(ssub(x.db.profile.frameSettings.frameStrata, 2))
 			end
-
-			--fix
-			if settings.Width <= 0 then settings.Width = addon.defaults.profile.frames[framename].Width end
-			if settings.Height <= 0 then settings.Height = addon.defaults.profile.frames[framename].Height end
 
 			-- Set the position
 			f:SetWidth(settings.Width)
@@ -294,51 +304,22 @@ end
 --	check the current settings profile if a name
 --	frame is specified.
 -- =====================================================
-local function CNShortValue(v)
-	if v >= 1e8 or v <= -1e8 then
-		return ("%.1f" .. SECOND_NUMBER_CAP):format(v / 1e8):gsub("%.?0+([km])$", "%1")
-	elseif v >= 1e4 or v <= -1e4 then
-		return ("%.1f" .. FIRST_NUMBER_CAP):format(v / 1e4):gsub("%.?0+([km])$", "%1")
-	else
-		return v
-	end
-end
-
 function x:Abbreviate(amount, frameName)
-	local isNegative = amount < 0
-	if isNegative then amount = -amount end
 	local message = tostring(amount)
+	local isNegative = amount < 0
+
+	if isNegative then amount = -amount end
 
 	if frameName and self.db.profile.frames[frameName] and self.db.profile.frames[frameName].megaDamage then
 		if self.db.profile.spells.formatAbbreviate then
-			if GetLocale() == 'zhCN' then
-				message = tostring(CNShortValue(amount))
-			elseif GetLocale() == "koKR" then
-				if (amount >= 100000000) then
-					if self.db.profile.megaDamage.decimalPoint then
-						message = tostring(mfloor((amount + 5000000) / 10000000) / 10) .. self.db.profile.megaDamage.billionSymbol
-					else
-						message = tostring(mfloor((amount + 50000000) / 100000000)) .. self.db.profile.megaDamage.billionSymbol
-					end
-				elseif (amount >= 10000) then
-					if self.db.profile.megaDamage.decimalPoint then
-						message = tostring(mfloor((amount + 500) / 1000) / 10) .. self.db.profile.megaDamage.millionSymbol
-					else
-						message = tostring(mfloor((amount + 5000) / 10000)) .. self.db.profile.megaDamage.millionSymbol
-					end
-				elseif (amount >= 1000) then
-					if self.db.profile.megaDamage.decimalPoint then
-						message = tostring(mfloor((amount + 50) / 100) / 10) .. self.db.profile.megaDamage.thousandSymbol
-					else
-						message = tostring(mfloor((amount + 500) / 1000)) .. self.db.profile.megaDamage.thousandSymbol
-					end
-				end
+		    if GetLocale() == 'zhCN' then
+			    message = tostring(CNShortValue(amount))
 			else
 				if (amount >= 1000000000) then
 					if self.db.profile.megaDamage.decimalPoint then
-						message = tostring(mfloor((amount + 50000000) / 100000000) / 10) .. self.db.profile.megaDamage.billionSymbol
+						message = tostring(mfloor((amount + 50000000) / 100000000) / 10) .. self.db.profile.megaDamage.millionSymbol
 					else
-						message = tostring(mfloor((amount + 500000000) / 1000000000)) .. self.db.profile.megaDamage.billionSymbol
+						message = tostring(mfloor((amount + 500000000) / 1000000000)) .. self.db.profile.megaDamage.millionSymbol
 					end
 				elseif (amount >= 1000000) then
 					if self.db.profile.megaDamage.decimalPoint then
@@ -365,6 +346,16 @@ function x:Abbreviate(amount, frameName)
 		end
 	end
 	return message
+end
+
+function CNShortValue(v)
+	if v >= 1e8 or v <= -1e8 then
+		return ("%.1f" .. SECOND_NUMBER_CAP):format(v / 1e8):gsub("%.?0+([km])$", "%1")
+	elseif v >= 1e4 or v <= -1e4 then
+		return ("%.1f" .. FIRST_NUMBER_CAP):format(v / 1e4):gsub("%.?0+([km])$", "%1")
+	else
+		return v
+	end
 end
 
 -- =====================================================
@@ -645,7 +636,6 @@ do
 				                                  message,
 				                                  settings.iconsEnabled and settings.iconsSize or -1,
 				                                  settings.fontJustify,
-				                                  settings.spacerIconsEnabled,
 				                                  strColor,
 				                                  true, -- Merge Override = true
 				                                  #item.entries )
@@ -654,7 +644,6 @@ do
 				                                  message,
 				                                  settings.iconsEnabled and settings.iconsSize or -1,
 				                                  settings.fontJustify,
-				                                  settings.spacerIconsEnabled,
 				                                  strColor,
 				                                  true, -- Merge Override = true
 				                                  #item.entries )
@@ -1036,7 +1025,7 @@ function x.TestMoreUpdate(self, elapsed)
 				if x.db.profile.frames[output].customColor then
 					color = x.db.profile.frames[output].fontColor
 				end
-				message = x:GetSpellTextureFormatted( x.db.profile.frames["outgoing"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["outgoing"].iconsSize, x.db.profile.frames["outgoing"].spacerIconsEnabled, x.db.profile.frames["outgoing"].fontJustify, nil, merged, multistriked )
+				message = x:GetSpellTextureFormatted( x.db.profile.frames["outgoing"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["outgoing"].iconsSize, x.db.profile.frames["outgoing"].fontJustify, nil, merged, multistriked )
 				x:AddMessage(output, message, color)
 			elseif self == x.frames["critical"] and random(2) % 2 == 0 then
 				local output, color = "critical", GetRandomSpellColor()
@@ -1053,7 +1042,7 @@ function x.TestMoreUpdate(self, elapsed)
 				if x.db.profile.frames[output].customColor then
 					color = x.db.profile.frames[output].fontColor
 				end
-				message = x:GetSpellTextureFormatted( x.db.profile.frames["critical"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["critical"].iconsSize, x.db.profile.frames["critical"].fontJustify, x.db.profile.frames["critical"].spacerIconsEnabled, nil, merged, multistriked )
+				message = x:GetSpellTextureFormatted( x.db.profile.frames["critical"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["critical"].iconsSize, x.db.profile.frames["critical"].fontJustify, nil, merged, multistriked )
 				x:AddMessage(output, message, color)
 			elseif self == x.frames["damage"] and random(2) % 2 == 0 then
 				local output, color = "damage", {1, random(100) / 255, random(100) / 255}

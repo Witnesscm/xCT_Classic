@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 -- No locals for NOOP
@@ -22,10 +22,3 @@ xCT_Plus = addon.engine
 
 -- No Operation
 addon.noop = noop
-
-local L = {}
-setmetatable(L, {
-    __index = function(self, key) return key end
-})
-
-addon.L = L

@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 -- Dont do anything for Legion
@@ -78,11 +78,11 @@ local function ProfileReset()
 end
 
 local function CheckExistingProfile()
-  local key = UnitName("player").." - "..GetRealmName()
-  return xCTSavedDB
-     and xCTSavedDB.profileKeys
-     and xCTSavedDB.profileKeys[key]
-     and xCTSavedDB.profiles[xCTSavedDB.profileKeys[key]]
+	local key = UnitName("player").." - "..GetRealmName()
+	return xCTSavedDB
+	   and xCTSavedDB.profileKeys
+	   and xCTSavedDB.profileKeys[key]
+	   and xCTSavedDB.profiles[xCTSavedDB.profileKeys[key]]
 end
 
 -- Handle Addon Initialized
@@ -172,18 +172,7 @@ local function VersionToTable( version )
   return t
 end
 
-local function CompareVersions( a, b, debug )
-
-  if debug then
-  	print('First Build:')
-    for i,v in pairs(a) do
-      print('    '..i..' = '..tostring(v))
-    end
-    print('Second Build:')
-    for i,v in pairs(b) do
-      print('    '..i..' = '..tostring(v))
-    end
-  end
+local function CompareVersions( a, b )
 
   -- Compare Major numbers
   if a.major > b.major then
@@ -337,13 +326,6 @@ function x:CompatibilityLogic( existing )
         end
       end
 
-      -- Clean up class frame from database
-      if CompareVersions( VersionToTable("4.5.1-beta5"), previousVersion ) > 0 then
-        if currentVersion.devBuild then --currentVersion.devBuild then
-          x.MigratePrint("|cffFFFF00Cleaning Frame DB (Removing Class)|r")
-        end
-        self.db.profile.frames.class = nil
-      end
 
     else
       -- Created New: Dont need to do anything right now
@@ -354,6 +336,7 @@ function x:CompatibilityLogic( existing )
 end
 
 function x.CleanUpForLegion()
+  print(L["Cleaning Up Legion"])
   local key = xCTSavedDB.profileKeys[UnitName("player").." - "..GetRealmName()]
   xCTSavedDB.profiles[key] = {}
   ReloadUI()
@@ -361,39 +344,39 @@ end
 
 local getSpellDescription
 do
-  local Descriptions, description = { }, nil
-  local tooltip = CreateFrame('GameTooltip')
-  tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
+	local Descriptions, description = { }, nil
+	local tooltip = CreateFrame('GameTooltip')
+	tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
 
-  -- Add FontStrings to the tooltip
-  local LeftStrings, temporaryRight = {}, nil
-  for i = 1, 5 do
-    LeftStrings[i] = tooltip:CreateFontString()
-    temporaryRight = tooltip:CreateFontString()
-    LeftStrings[i]:SetFontObject(GameFontNormal)
-    temporaryRight:SetFontObject(GameFontNormal)
-    tooltip:AddFontStrings(LeftStrings[i], temporaryRight)
-  end
+	-- Add FontStrings to the tooltip
+	local LeftStrings, temporaryRight = {}, nil
+	for i = 1, 5 do
+		LeftStrings[i] = tooltip:CreateFontString()
+		temporaryRight = tooltip:CreateFontString()
+		LeftStrings[i]:SetFontObject(GameFontNormal)
+		temporaryRight:SetFontObject(GameFontNormal)
+		tooltip:AddFontStrings(LeftStrings[i], temporaryRight)
+	end
 
-  function getSpellDescription(spellID)
-    if Descriptions[spellID] then
-      return Descriptions[spellID]
-    end
+	function getSpellDescription(spellID)
+		if Descriptions[spellID] then
+			return Descriptions[spellID]
+		end
 
-    tooltip:SetSpellByID(spellID)
+		tooltip:SetSpellByID(spellID)
 
-    description = ""
-    if LeftStrings[tooltip:NumLines()] then
-      description = LeftStrings[ tooltip:NumLines() ]:GetText()
-    end
+		description = ""
+		if LeftStrings[tooltip:NumLines()] then
+			description = LeftStrings[ tooltip:NumLines() ]:GetText()
+		end
 
-    if description == "" then
-      description = "No Description"
-    end
+		if description == "" then
+			description = "No Description"
+		end
 
-    Descriptions[spellID] = description
-    return description
-  end
+		Descriptions[spellID] = description
+		return description
+	end
 end
 
 -- Spammy Spell Get/Set Functions
@@ -457,35 +440,67 @@ local CLASS_NAMES = {
   },
 }
 
-x.specName = {
-   	[62] = L["Arcane"],
-   	[63] = L["Fire"],
-   	[64] = L["Frost"],
-   	[65] = L["Holy"],
-   	[66] = L["Protection"],
-   	[70] = L["Retribution"],
-   	[71] = L["Arms"],
-   	[72] = L["Fury"],
-   	[73] = L["Protection"],
-   	[102] = L["Balance"],
-   	[103] = L["Feral"],
-   	[105] = L["Restoration"],
-   	[253] = L["Beast Mastery"],
-   	[254] = L["Marksmanship"],
-   	[255] = L["Survival"],
-   	[256] = L["Discipline"],
-   	[257] = L["Holy"],
-   	[258] = L["Shadow"],
-   	[259] = L["Assassination"],
-   	[260] = L["Combat"],
-   	[261] = L["Subtlety"],
-   	[262] = L["Elemental"],
-   	[263] = L["Enhancement"],
-   	[264] = L["Restoration"],
-   	[265] = L["Affliction"],
-   	[266] = L["Demonology"],
-   	[267] = L["Destruction"],
-}
+if GetLocale() == "zhCN" then
+	x.specName = {
+    	[62] = "奥术",
+    	[63] = "火焰",
+    	[64] = "冰霜",
+    	[65] = "神圣",
+    	[66] = "防护",
+    	[70] = "惩戒",
+    	[71] = "武器",
+    	[72] = "狂怒",
+    	[73] = "防护",
+    	[102] = "平衡",
+    	[103] = "野性战斗",
+    	[105] = "恢复",
+    	[253] = "野兽控制",
+    	[254] = "射击",
+    	[255] = "生存",
+    	[256] = "戒律",
+    	[257] = "神圣",
+    	[258] = "暗影",
+    	[259] = "刺杀",
+    	[260] = "战斗",
+    	[261] = "敏锐",
+    	[262] = "元素",
+    	[263] = "增强",
+    	[264] = "恢复",
+    	[265] = "痛苦",
+    	[266] = "恶魔学识",
+    	[267] = "毁灭",
+	}
+else
+	x.specName = {
+    	[62] = "Arcane",
+    	[63] = "Fire",
+    	[64] = "Frost",
+    	[65] = "Holy",
+    	[66] = "Protection",
+    	[70] = "Retribution",
+    	[71] = "Arms",
+    	[72] = "Fury",
+    	[73] = "Protection",
+    	[102] = "Balance",
+    	[103] = "Feral",
+    	[105] = "Restoration",
+    	[253] = "Beast Mastery",
+    	[254] = "Marksmanship",
+    	[255] = "Survival",
+    	[256] = "Discipline",
+    	[257] = "Holy",
+    	[258] = "Shadow",
+    	[259] = "Assassination",
+    	[260] = "Combat",
+    	[261] = "Subtlety",
+    	[262] = "Elemental",
+    	[263] = "Enhancement",
+    	[264] = "Restoration",
+    	[265] = "Affliction",
+    	[266] = "Demonology",
+    	[267] = "Destruction",
+	}
+end
 
 function x.GenerateDefaultSpamSpells()
   local defaults = addon.defaults.spells.merge
@@ -530,8 +545,7 @@ function x:UpdateSpamSpells()
 
   local spells = addon.options.args.spells.args.classList.args
   local global = addon.options.args.spells.args.globalList.args
-  local racetab = addon.options.args.spells.args.raceList.args
-  
+
   -- Clear out the old spells
   for class, specs in pairs(CLASS_NAMES) do
     spells[class].args = {}
@@ -556,10 +570,7 @@ function x:UpdateSpamSpells()
   -- Create a list of the categories (to be sorted)
   local categories = {}
   for _, entry in pairs(addon.merges) do
-
-    --TODO better code when i understand more the code
-
-    if not CLASS_NAMES[entry.class] and entry.desc ~= "Racial Spell" then
+    if not CLASS_NAMES[entry.class] then
       table.insert(categories, entry.class)
     end
   end
@@ -582,52 +593,13 @@ function x:UpdateSpamSpells()
     categoryOffsets[category] = currentIndex + 1
   end
 
-------------------------------------------------------
--- Clear out the old spells (racetab)
--- Dirty add have to reform when better understanding the code
-  for index in pairs(racetab) do
-    racetab[index] = nil
-  end
-
-  -- Create a list of the categories (to be sorted)
-  local rcategories = {}
-  for _, entry in pairs(addon.merges) do
-    --TODO better code when i understand more the code
-    if not CLASS_NAMES[entry.class] and entry.desc == "Racial Spell" then
-      table.insert(rcategories, entry.class)
-    end
-  end
-
-  -- Show Categories in alphabetical order
-  table.sort(rcategories)
-
-  -- Assume less than 1000 entries per category ;)
-  local rcategoryOffsets = {}
-  for i, rcategory in pairs(rcategories) do
-    local rcurrentIndex = i * 1000
-
-    -- Create the Category Header
-    racetab[rcategory] = {
-      type = 'description',
-      order = rcurrentIndex,
-      name = "\n"..rcategory,
-      fontSize = 'large',
-    }
-    rcategoryOffsets[rcategory] = rcurrentIndex + 1
-  end
-------------------------------------------------------
-
-
-
-
   -- Update the UI
   for spellID, entry in pairs(addon.merges) do
     local name = GetSpellInfo(spellID)
     if name then
-    
-    --TODO better code when i understand more the code
+
       -- Create a useful description for the spell
-      local spellDesc = getSpellDescription(spellID) or "No Description"    
+      local spellDesc = getSpellDescription(spellID) or "No Description"
       local desc = ""
       if entry.desc and not CLASS_NAMES[entry.class] then
         desc = "|cff9F3ED5" .. entry.desc .. "|r\n\n"
@@ -638,7 +610,7 @@ function x:UpdateSpamSpells()
       else
         desc = desc .. "\n|cffFF0000Interval|r Merge every |cffFFFF00" .. tostring(entry.interval) .. "|r seconds"
       end
-    
+
       -- Add the spell to the UI
       if CLASS_NAMES[entry.class] then
         local index = CLASS_NAMES[entry.class][tonumber(entry.desc) or 0]
@@ -650,16 +622,6 @@ function x:UpdateSpamSpells()
           get = SpamSpellGet,
           set = SpamSpellSet,
         }
-    elseif entry.desc == "Racial Spell" then
-      racetab[tostring(spellID)] = {
-          order = rcategoryOffsets[entry.class],
-          type = 'toggle',
-          name = name,
-          desc = desc,
-          get = SpamSpellGet,
-          set = SpamSpellSet,
-        }
-        rcategoryOffsets[entry.class] = rcategoryOffsets[entry.class] + 1
       else
         global[tostring(spellID)] = {
           order = categoryOffsets[entry.class],
@@ -970,7 +932,7 @@ function x:UpdateComboTracker()
   local myClass, mySpec = x.player.class, x.player.spec
   x.TrackingEntry = nil
 
-  if not mySpec or mySpec < 1 or mySpec > 4 then return end  -- under Level 10 return 5
+  if not mySpec or mySpec < 1 then return end  -- under Level 10 probably or not spec'd, I don't know what to do :P
 
   for i, entry in pairs(x.db.profile.spells.combo[myClass][mySpec]) do
     if type(entry) == "table" and entry.enabled then
@@ -1431,21 +1393,11 @@ local funcColorResetHidden = function(info)
     return not x.db.profile.frames[info[#info-3]].colors[info[#info-1]].colors[color].enabled or
       tableCompare(x.db.profile.frames[info[#info-3]].colors[info[#info-1]].colors[color].color, x.db.profile.frames[info[#info-3]].colors[info[#info-1]].colors[color].default)
   elseif info[#info-3] == 'fontColors' then
-    return not x.db.profile.frames[info[#info-4]].colors[info[#info-2]].colors[info[#info-1]].colors[color].enabled or
+    return not x.db.profile.frames[info[#info-4]].colors[info[#info-2]].colors[info[#info-1]].colors[color].color or
       tableCompare(x.db.profile.frames[info[#info-4]].colors[info[#info-2]].colors[info[#info-1]].colors[color].color, x.db.profile.frames[info[#info-4]].colors[info[#info-2]].colors[info[#info-1]].colors[color].default)
   elseif info[#info-1] == 'SpellSchools' then
     return not x.db.profile.SpellColors[color].enabled or
       tableCompare(x.db.profile.SpellColors[color].color, x.db.profile.SpellColors[color].default)
-  end
-end
-
-local funcColorDisabled = function(info)
-  if info[#info-1] == 'fontColors' then
-    return x.db.profile.frames[info[#info-2]].customColor
-  elseif info[#info-2] == 'fontColors' then
-    return x.db.profile.frames[info[#info-3]].customColor
-  elseif info[#info-3] == 'fontColors' then
-    return x.db.profile.frames[info[#info-4]].customColor
   end
 end
 
@@ -1468,7 +1420,6 @@ local function GenerateColorOptionsTable_Entry(colorName, settings, options, ind
     get = getColorDB,
     set = setColorDB,
     desc = L["Enable a custom color for |cff798BDD"]..settings.desc.."|r.",
-    disabled = funcColorDisabled,
   }
   options[colorName.."_color"] = {
     order = index + 1,
@@ -1478,7 +1429,6 @@ local function GenerateColorOptionsTable_Entry(colorName, settings, options, ind
     set = setColorDB,
     desc = L["Change the color for |cff798BDD"]..settings.desc.."|r.",
     hidden = funcColorHidden,
-    disabled = funcColorDisabled,
   }
   options[colorName.."_reset"] = {
     type = 'execute',
@@ -1488,7 +1438,6 @@ local function GenerateColorOptionsTable_Entry(colorName, settings, options, ind
     func = funcColorReset,
     desc = "Resets |cff798BDD"..settings.desc.."|r back to the default color.",
     hidden = funcColorResetHidden,
-    disabled = funcColorDisabled,
   }
   options["spacer"..index] = {
     order = index + 3,

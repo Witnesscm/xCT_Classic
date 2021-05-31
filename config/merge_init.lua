@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 local ADDON_NAME, addon = ...
@@ -53,37 +53,6 @@ do
 
 		_working.spellId = tonumber(id) or id
 		return spell_2
-	end
-	
-	-- rspell for race spells
-	
-	local _debug_working_race = false
-	local _working_race = {}
-	
-	local function race(name)
-		_working_race.race = name
-	end
-	
-	-- for spell, but the second arg
-	local function rspell_2(interval)
-		_debug_working_race = false
-		interval = tonumber(interval)
-		-- Create the spell here
-		addon.merges[_working_race.spellId] = {
-			class = _working_race.race or "ITEM",
-			interval = interval or 3,
-			desc = "Racial Spell",
-			prep = _working_race.prep or interval or 3,
-		}
-	end
-	
-	local function rspell(id)
-
-		-- Leave this in so you don't shoot yourself in the foot
-		if _debug_working_race then error "finish your first spell" end
-		_debug_working_race = true
-		_working_race.spellId = tonumber(id) or id
-		return rspell_2
 	end
 
 	-- alias helper
@@ -141,5 +110,5 @@ do
 	end
 
 
-	addon.merge_helpers = {spell, class, spec, alias, item, header, race, rspell}
+	addon.merge_helpers = {spell, class, spec, alias, item, header}
 end

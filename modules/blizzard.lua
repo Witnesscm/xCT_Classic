@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 -- Dont do anything for Legion
@@ -66,13 +66,13 @@ InterfaceOptionsCombatPanel:HookScript('OnShow', function(self)
     InterfaceOptionsCombatPanelEnableFloatingCombatText:Disable()
     InterfaceOptionsCombatPanel.xCTEnabled = true
 
-    -- -- InterfaceOptionsCombatPanelSpellAlertOpacitySlider:ClearAllPoints()
-    -- -- InterfaceOptionsCombatPanelSpellAlertOpacitySlider:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 24, -32)
+    -- InterfaceOptionsCombatPanelSpellAlertOpacitySlider:ClearAllPoints()
+    -- InterfaceOptionsCombatPanelSpellAlertOpacitySlider:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 24, -32)
 	InterfaceOptionsCombatPanelCombatTextFloatModeDropDown:ClearAllPoints()
-	InterfaceOptionsCombatPanelCombatTextFloatModeDropDown:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 0, -20)
-	-- InterfaceOptionsCombatPanelEnableCombatDamageText:Disable()
-	-- InterfaceOptionsCombatPanelEnableCombatDamageText:ClearAllPoints()
-	-- InterfaceOptionsCombatPanelEnableCombatDamageText:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 224, -32)
+	InterfaceOptionsCombatPanelCombatTextFloatModeDropDown:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 24, -32)
+	InterfaceOptionsCombatPanelEnableCombatDamageText:Disable()
+	InterfaceOptionsCombatPanelEnableCombatDamageText:ClearAllPoints()
+	InterfaceOptionsCombatPanelEnableCombatDamageText:SetPoint("TOPLEFT", configButton, "BOTTOMLEFT", 224, -32)
   end
 end)
 

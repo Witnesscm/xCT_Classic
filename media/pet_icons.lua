@@ -9,7 +9,7 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 local ADDON_NAME, addon = ...
@@ -17,7 +17,8 @@ local ADDON_NAME, addon = ...
 -- Shorten my handle
 local x = addon.engine
 
-addon.DEFAULT_PET_ICON = 'ability_hunter_pet_goto'
+addon.DEFAULT_PET_ICON = 'ability_GhoulFrenzy'
+
 
 addon.PET_ICONS = {
 

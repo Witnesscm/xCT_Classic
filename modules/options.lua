@@ -9,11 +9,10 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2018. All Rights Reserved.        ]
  [====================================]]
 
 local build = select(4, GetBuildInfo())
-
 local ADDON_NAME, addon = ...
 local L = addon.L
 local LSM = LibStub("LibSharedMedia-3.0")
@@ -202,11 +201,11 @@ x.cvar_update = function( force )
     SetCVar("floatingCombatTextCombatDamageAllAutos", 0)
   end
 
-  if x.db.profile.blizzardFCT.floatingCombatTextCombatHealing then
-    SetCVar("floatingCombatTextCombatHealing", 1)
-  else
-    SetCVar("floatingCombatTextCombatHealing", 0)
-  end
+  -- if x.db.profile.blizzardFCT.floatingCombatTextCombatHealing then
+    -- SetCVar("floatingCombatTextCombatHealing", 1)
+  -- else
+    -- SetCVar("floatingCombatTextCombatHealing", 0)
+  -- end
 
   -- if x.db.profile.blizzardFCT.floatingCombatTextCombatHealingAbsorbSelf then
     -- SetCVar("floatingCombatTextCombatHealingAbsorbSelf", 1)
@@ -369,7 +368,6 @@ local function isFrameNotScrollable(info) return isFrameItemDisabled(info) or no
 local function isFrameUseCustomFade(info) return not x.db.profile.frames[info[#info-2]].enableCustomFade or isFrameItemDisabled(info) end
 local function isFrameFadingDisabled(info) return isFrameUseCustomFade(info) or not x.db.profile.frames[info[#info-2]].enableFade end
 local function isFrameIconDisabled(info) return isFrameItemDisabled(info) or not x.db.profile.frames[info[#info-2]].iconsEnabled end
-local function isFrameIconSpacerDisabled(info) return x.db.profile.frames[info[#info-2]].iconsEnabled end
 local function isFrameFontShadowDisabled(info) return isFrameItemDisabled(info) or not x.db.profile.frames[info[#info-2]].enableFontShadow end
 local function isFrameCustomColorDisabled(info) return not x.db.profile.frames[info[#info-2]].customColor end
 -- This is TEMP
@@ -784,27 +782,6 @@ addon.options.args["spells"] = {
           order = 1,
           fontSize = "small",
           name = L["Uncheck an item if you do not want it merged. Contact me to add new items. See |cffFFFF00Credits|r for contact info.\n\n"],
-        },
-      },
-    },
-	
-    raceList = {
-      name = "Racial Spells",
-      type = 'group',
-      order = 23,
-      args = {
-        title = {
-          type = 'description',
-          order = 0,
-          name = "List of Mergeable Spells |cff798BDD(See Category)|r",
-          fontSize = "large",
-          width = "double",
-        },
-        mergeListDesc = {
-          type = "description",
-          order = 1,
-          fontSize = "small",
-          name = "Uncheck an item if you do not want it merged. Contact me to add new items. See |cffFFFF00Credits|r for contact info.\n\n",
         },
       },
     },
@@ -1665,17 +1642,8 @@ addon.options.args["FloatingCombatText"] = {
           fontSize = 'medium',
         },
 
-        floatingCombatTextCombatHealing = {
-          order = 21,
-          name = L["Show Healing"],
-          type = 'toggle',
-          desc = OPTION_TOOLTIP_SHOW_COMBAT_HEALING,
-          get = get0,
-          set = set0_update,
-        },
-
         floatingCombatTextFriendlyHealers = {
-          order = 22,
+          order = 21,
           name = L["Show Friendly Healers"],
           type = 'toggle',
           desc = OPTION_TOOLTIP_COMBAT_TEXT_SHOW_FRIENDLY_NAMES .. L["\n\n|cffFF0000Requires Self Scrolling Combat Text|r"],
@@ -1684,7 +1652,7 @@ addon.options.args["FloatingCombatText"] = {
         },
 
         floatingCombatTextDamageReduction = {
-          order = 23,
+          order = 22,
           name = L["Show Damage Reduction"],
           type = 'toggle',
           desc = OPTION_TOOLTIP_COMBAT_TEXT_SHOW_RESISTANCES .. L["\n\n|cffFF0000Requires Self Scrolling Combat Text|r"],
@@ -2501,15 +2469,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -2535,8 +2494,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -2950,15 +2908,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -2984,8 +2933,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -3254,12 +3202,6 @@ addon.options.args["Frames"] = {
               name = L["|cff798BDDDamage Settings|r:"],
               fontSize = 'large',
             },
-            specialTweaks_PlayerDesc = {
-              type = 'description',
-              order = 1,
-              name = L["\n|cffFFFF00Player Settings|r:"],
-              fontSize = 'small',
-            },
             enableOutDmg = {
               order = 10,
               type = 'toggle',
@@ -3268,30 +3210,28 @@ addon.options.args["Frames"] = {
               get = get2,
               set = set2,
             },
-            enableDotDmg = {
+            enableAutoAttack = {
               order = 11,
+              type = 'toggle',
+              name = L["Show Auto Attack"],
+              desc = L["Show your auto attack damage."],
+              get = get2,
+              set = set2,
+            },
+            enableDotDmg = {
+              order = 12,
               type = 'toggle',
               name = L["Show DoTs"],
               desc = L["Show your Damage-Over-Time (DOT) damage. (|cffFF0000Requires:|r Outgoing Damage)"],
               get = get2,
               set = set2,
             },
-            enableAutoAttack_Outgoing = {
-              order = 12,
-              type = 'toggle',
-              name = L["Show Auto Attack"],
-              desc = L["Show your non-critical, auto attack damage."],
-              get = get2,
-              set = set2,
-            },
-
-            specialTweaks_PetVehicleDesc = {
+            spacer_Damage1 = {
               type = 'description',
               order = 20,
-              name = L["\n|cffFFFF00Pet and Vehicle Settings|r:"],
+              name = '',
               fontSize = 'small',
             },
-
             enablePetDmg = {
               order = 21,
               type = 'toggle',
@@ -3300,32 +3240,31 @@ addon.options.args["Frames"] = {
               get = get2,
               set = set2,
             },
-            enablePetAutoAttack_Outgoing = {
+            enablePetAutoAttack = {
               order = 22,
               type = 'toggle',
               name = L["Pet Auto Attacks"],
-              desc = L["Show your pet's non-critical, auto attacks."],
+              desc = L["Show your pet's auto attacks."],
               get = get2,
               set = set2,
-            },
-            enableKillCommand = {
-              order = 23,
-              type = 'toggle',
-              name = L["Show Kill Command"],
-              desc = L["Change the source of |cff798BDDKill Command|r to be the |cffFF8000Player|r. This is helpful when you to turn off |cffFF8000Pet|r damage."],
-              get = get2,
-              set = set2,
-              hidden = function()return x.player.class~='HUNTER'end
             },
             enableVehicleDmg = {
-              order = 24,
+              order = 23,
               type = 'toggle',
               name = L["Show Vehicle Damage"],
               desc = L["Show damage that your vehicle does. This can be anything from a vehicle you are controlling to Hati, the beast mastery pet."],
               get = get2,
               set = set2,
             },
-            
+            enableKillCommand = {
+              order = 24,
+              type = 'toggle',
+              name = L["Show Kill Command"],
+              desc = L["Show the player, not the player's pet, as the source of Kill Command. Will allow you to turn off pet damage."],
+              get = get2,
+              set = set2,
+              hidden = function()return x.player.class~='HUNTER'end
+            },
             healingSettings = {
               type = 'description',
               order = 30,
@@ -3365,19 +3304,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameItemDisabled,
             },
-            enableOverhealingSubtraction  = {
-              order = 35,
-              type = 'toggle',
-              name = L["Subtract Overhealing"],
-              desc = L["Subtract the overhealed amount from the Total Amount"],
-              get = get2,
-              set = set2,
-              disabled = function(info)
-                return not x.db.profile.frames.outgoing.enabledFrame or
-                  not x.db.profile.frames.outgoing.enableOverhealing
-              end,
-            },
-
             spacer_Healing1 = {
               type = 'description',
               order = 40,
@@ -3397,7 +3323,7 @@ addon.options.args["Frames"] = {
               end,
             },
             overhealingPrefix = {
-              order = 45,
+              order = 42,
               type = 'input',
               name = L["Overhealing Prefix"],
               desc = L["Prefix this value to the beginning when displaying an overheal amount.\n\n|cffFF0000Requires:|r |cff798BDDFormat Overhealing|r"],
@@ -3410,7 +3336,7 @@ addon.options.args["Frames"] = {
               end,
             },
             overhealingPostfix = {
-              order = 46,
+              order = 43,
               type = 'input',
               name = L["Overhealing Postfix"],
               desc = L["Prefix this value to the endind when displaying an overheal amount.\n\n|cffFF0000Requires:|r |cff798BDDFormat Overhealing|r"],
@@ -3769,15 +3695,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -3803,8 +3720,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -4073,15 +3989,15 @@ addon.options.args["Frames"] = {
               name = L["|cff798BDDMiscellaneous Settings|r:"],
               fontSize = 'large',
             },
-            enableAutoAttack_Critical = {
+            showSwing = {
               order = 1,
               type = 'toggle',
               name = L["Show Auto Attacks"],
-              desc = L["Show criticals from Auto Attack and Swings. If disabled, they will be displayed as non-critical auto attacks. They will be merged into the Outgoing frame."],
+              desc = L["Show Auto Attack and Swings criticals in this frame. If disabled here, they are automatically shown in the Outgoing frame and can be completely disabled there."],
               get = get2,
               set = set2,
             },
-            prefixAutoAttack_Critical = {
+            prefixSwing = {
               order = 2,
               type = 'toggle',
               name = L["Show Auto Attacks (Pre)Postfix"],
@@ -4111,7 +4027,7 @@ addon.options.args["Frames"] = {
               desc = L["Prefix this value to the beginning when displaying a critical amount."],
               get = getTextIn2,
               set = setTextIn2,
-              --disabled = isFrameItemDisabled,
+              disabled = isFrameItemDisabled,
             },
             critPostfix = {
               order = 12,
@@ -4120,23 +4036,7 @@ addon.options.args["Frames"] = {
               desc = L["Postfix this value to the end when displaying a critical amount."],
               get = getTextIn2,
               set = setTextIn2,
-              --disabled = isFrameItemDisabled,
-            },
-            critPostPreReset = {
-              order = 13,
-              type = 'execute',
-              name = L["Reset"],
-              desc = L["Reset Prefix and Postfix to their default setting."],
-              func = function()
-                  local critical = x.db.profile.frames.critical
-                  critical.critPrefix = "|cffFF0000*|r"
-                  critical.critPostfix = "|cffFF0000*|r"
-                end,
-              width = 'half',
-              disabled = function()
-                  local critical = x.db.profile.frames.critical
-                  return critical.critPrefix == "|cffFF0000*|r" and critical.critPostfix == "|cffFF0000*|r"
-                end,
+              disabled = isFrameItemDisabled,
             },
           },
 
@@ -4445,15 +4345,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
 
             iconAdditionalSettings = {
               type = 'description',
@@ -4495,8 +4386,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -5224,15 +5114,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -5258,8 +5139,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -5776,8 +5656,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -6098,8 +5977,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -6172,8 +6050,6 @@ addon.options.args["Frames"] = {
               fontSize = 'small',
             },
 
-
-            -- Disable Powers
             disableResource_MANA = {
               order = 100,
               type = 'toggle',
@@ -6182,6 +6058,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_RAGE = {
               order = 101,
               type = 'toggle',
@@ -6190,6 +6067,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_FOCUS = {
               order = 102,
               type = 'toggle',
@@ -6198,6 +6076,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_ENERGY = {
               order = 103,
               type = 'toggle',
@@ -6215,6 +6094,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_RUNIC_POWER = {
               order = 105,
               type = 'toggle',
@@ -6223,6 +6103,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_SOUL_SHARDS = {
               order = 106,
               type = 'toggle',
@@ -6231,6 +6112,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
+
             disableResource_LUNAR_POWER = {
               order = 107,
               type = 'toggle',
@@ -6240,26 +6122,25 @@ addon.options.args["Frames"] = {
               width = "normal",
             },
 
-
-
-
-            disableResource_CHI = {
-              order = 108,
-              type = 'toggle',
-              name = L["Disable |cff798BDD"]..CHI,
-              get = get2,
-              set = set2,
-              width = "normal",
-            },
             disableResource_HOLY_POWER = {
-              order = 109,
+              order = 108,
               type = 'toggle',
               name = L["Disable |cff798BDD"]..HOLY_POWER,
               get = get2,
               set = set2,
               width = "normal",
             },
-            disableResource_INSANITY_POWER = {
+
+            disableResource_CHI = {
+              order = 109,
+              type = 'toggle',
+              name = L["Disable |cff798BDD"]..CHI,
+              get = get2,
+              set = set2,
+              width = "normal",
+            },
+
+            disableResource_INSANITY = {
               order = 110,
               type = 'toggle',
               name = L["Disable |cff798BDD"]..INSANITY,
@@ -6267,41 +6148,51 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
-            disableResource_MAELSTROM_POWER = { -- Add in Maelstrom to resources
-              order = 111,
-              type = 'toggle',
-              name = L["Disable |cff798BDD"]..MAELSTROM_POWER,
-              get = get2,
-              set = set2,
-              width = "normal",
-            },
 
             disableResource_ARCANE_CHARGES = {
-              order = 112,
+              order = 111,
               type = 'toggle',
               name = L["Disable |cff798BDD"]..ARCANE_CHARGES,
               get = get2,
               set = set2,
               width = "normal",
             },
+
             disableResource_FURY = {
-              order = 113,
+              order = 112,
               type = 'toggle',
               name = L["Disable |cff798BDD"]..FURY,
               get = get2,
               set = set2,
               width = "normal",
             },
+
             disableResource_PAIN = {
-              order = 114,
+              order = 113,
               type = 'toggle',
               name = L["Disable |cff798BDD"]..PAIN,
               get = get2,
               set = set2,
               width = "normal",
             },
-            
+			
+			disableResource_MAELSTROM = { -- Add in Maelstrom to resources
+              order = 113,
+              type = 'toggle',
+              name = L["Disable |cff798BDD"]..MAELSTROM,
+              get = get2,
+              set = set2,
+              width = "normal",
+            },
 
+            disableResource_ALTERNATE_POWER = {
+              order = 114,
+              type = 'toggle',
+              name = L["Disable |cff798BDD"]..ALTERNATE_RESOURCE_TEXT,
+              get = get2,
+              set = set2,
+              width = "double",
+            },
           },
         },
       },
@@ -6599,15 +6490,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -6633,8 +6515,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -6954,15 +6835,6 @@ addon.options.args["Frames"] = {
               set = set2,
               disabled = isFrameIconDisabled,
             },
-            spacerIconsEnabled = {
-              order = 4,
-              type = 'toggle',
-              name = L["Show Invisible Icons"],
-              desc = L["When icons are disabled, you can still enable invisible icons to line up text."],
-              get = get2,
-              set = set2,
-              disabled = isFrameIconSpacerDisabled,
-            },
           }
         },
 
@@ -6988,8 +6860,7 @@ addon.options.args["Frames"] = {
             customColor = {
               order = 2,
               type = 'toggle',
-              name = L["All Text One Color (Override Color Settings)"],
-              width = 'double',
+              name = L["Enable Override"],
               desc = L["Change all the text in this frame to a specific color."],
               get = get2,
               set = set2,
@@ -7080,16 +6951,8 @@ addon.options.args["Frames"] = {
               get = get2,
               set = set2,
             },
-            showPurchased = {
-              order = 8,
-              type = 'toggle',
-              name = L["Purchased Items"],
-              desc = L["Displays items that were purchased from a vendor."],
-              get = get2,
-              set = set2,
-            },
             colorBlindMoney = {
-              order = 9,
+              order = 8,
               type = 'toggle',
               name = L["Color Blind Mode"],
               desc = L["Displays money using letters G, S, and C instead of icons."],
@@ -7097,7 +6960,7 @@ addon.options.args["Frames"] = {
               set = set2,
             },
             filterItemQuality = {
-              order = 10,
+              order = 9,
               type = 'select',
               name = L["Filter Item Quality"],
               desc = L["Will not display any items that are below this quality (does not filter Quest or Crafted items)."],

@@ -6,7 +6,8 @@ if not Lib then return end
 -- Our own personal space
 local private = {}
 Lib.private = private
-
+local bit_band = bit.band
+local LibSpellNameToID = LibStub("LibSpellNameToID")
 do
 	-- Upvalues
 	local next=next
@@ -231,7 +232,7 @@ do
 				args.spellName, args.itemId, args.itemName = tempTable[startIndex], tempTable[startIndex+1], tempTable[startIndex+2]
 				--args.spellName, args.itemId, args.itemName = select(1, ...)
 
-			elseif event == "UNIT_DIED" or event == "UNIT_DESTROYED" or event == "UNIT_DISSIPATES" then
+			elseif event == "UNIT_DIED" or event == "UNIT_DESTROYED" or unit == "UNIT_DISSIPATES" then
 				args.recapID, args.unconsciousOnDeath = tempTable[startIndex], tempTable[startIndex+1]
 
 			elseif event == "PARTY_KILL" then -- do nothing
@@ -278,6 +279,10 @@ do
 				-- SpellId for Auto Attack, "Auto Attack" (Localized), Physical Damage (Spell School)
 				args.spellId, args.spellName, args.spellSchool = 6603, AUTO_ATTACK, 1
 			end
+			
+			if args.spellId == 0 then
+				args.spellId = LibSpellNameToID:GetSpellID(args.spellName)
+			end
 
 			if suffix == "_DAMAGE" then
 				args.amount, args.overkill, args.school,
@@ -286,6 +291,8 @@ do
 				args.isOffHand = tempTable[startIndex+i], tempTable[startIndex+i+1], tempTable[startIndex+i+2],
 				tempTable[startIndex+i+3], tempTable[startIndex+i+4], tempTable[startIndex+i+5], tempTable[startIndex+i+6],
 				tempTable[startIndex+i+7], tempTable[startIndex+i+8], tempTable[startIndex+i+9]
+				
+				
 
 			--[[ This is for the combat log only
 			elseif suffix == "_DAMAGE_LANDED" then
@@ -336,6 +343,10 @@ do
 
 			elseif suffix == "_CAST_FAILED" then
 				args.failedType = tempTable[startIndex+i]
+			end
+			
+			if args.extraSpellId == 0 then
+				args.extraSpellId = LibSpellNameToID:GetSpellID(args.extraSpellName)
 			end
 
 			-- Destroy the old
@@ -390,20 +401,20 @@ do
 			args.IsDestinationRaidMember  = private.IsDestinationRaidMember
 			args.IsSourcePartyMember      = private.IsSourcePartyMember
 			args.IsDestinationPartyMember = private.IsDestinationPartyMember
-
+			
 			-- Call all the registered handlers
 			args:pin()
 			for func in pairs(private.handles) do
 				func(args)
 			end
 			args:free() -- If no one else pinned this table, it should be cleaned up now
-
+			
 
 		else
 			self:UnregisterEvent"PLAYER_ENTERING_WORLD"
 			playerGUID=UnitGUID"player"
 		end
-
+		
 	end)
 end
 

@@ -1,11 +1,17 @@
 -- Widget created by Yssaril
-local DataVersion = 9003.1
+--[===[@debug@
+local DataVersion = 9001 -- dev version always overwrites everything else :)
+--@end-debug@]===]
+--@non-debug@
+local DataVersion = 42
+--@end-non-debug@
 local AGSMW = LibStub:NewLibrary("AceGUISharedMediaWidgets-1.0", DataVersion)
 
 if not AGSMW then
   return	-- already loaded and no upgrade necessary
 end
 
+LoadAddOn("LibSharedMedia-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local Media = LibStub("LibSharedMedia-3.0")
 
@@ -48,9 +54,10 @@ do
 
 	-- create or retrieve BaseFrame
 	function AGSMW:GetBaseFrame()
-		local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+		local frame = CreateFrame("Frame", nil, UIParent)
 		frame:SetHeight(44)
 		frame:SetWidth(200)
+		frame:SetPoint("CENTER", UIParent, "CENTER")
 
 		local label = frame:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
 			label:SetPoint("TOPLEFT",frame,"TOPLEFT",0,0)
@@ -67,7 +74,6 @@ do
 			DLeft:SetTexture([[Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame]])
 			DLeft:SetTexCoord(0, 0.1953125, 0, 1)
 		frame.DLeft = DLeft
-
 		local DRight = frame:CreateTexture(nil, "ARTWORK")
 			DRight:SetWidth(25)
 			DRight:SetHeight(64)
@@ -76,7 +82,6 @@ do
 			DRight:SetTexture([[Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame]])
 			DRight:SetTexCoord(0.8046875, 1, 0, 1)
 		frame.DRight = DRight
-
 		local DMiddle = frame:CreateTexture(nil, "ARTWORK")
 			DMiddle:SetHeight(64)
 			DMiddle:SetPoint("TOP", DLeft, "TOP")
@@ -112,7 +117,7 @@ do
 	function AGSMW:GetBaseFrameWithWindow()
 		local frame = self:GetBaseFrame()
 
-		local displayButton = CreateFrame("Button", nil, frame, "BackdropTemplate")
+		local displayButton = CreateFrame("Button", nil, frame)
 			displayButton:SetHeight(42)
 			displayButton:SetWidth(42)
 			displayButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 1, -2)
@@ -157,9 +162,10 @@ do
 
 	local function AddFrame(self, frame)
 		frame:SetParent(self.contentframe)
-		frame:SetFrameStrata(self:GetFrameStrata())
-		frame:SetFrameLevel(self:GetFrameLevel() + 100)
-
+		local strata = self:GetFrameStrata()
+		frame:SetFrameStrata(strata)
+		local level =  self:GetFrameLevel() + 100
+		frame:SetFrameLevel(level)
 		if next(self.contentRepo) then
 			frame:SetPoint("TOPLEFT", self.contentRepo[#self.contentRepo], "BOTTOMLEFT", 0, 0)
 			frame:SetPoint("RIGHT", self.contentframe, "RIGHT", 0, 0)
@@ -171,18 +177,19 @@ do
 			frame:SetPoint("RIGHT", self.contentframe, "RIGHT", 0, 0)
 			self.contentRepo[1] = frame
 		end
-
 		if self.contentframe:GetHeight() > UIParent:GetHeight()*2/5 - 20 then
-			self.scrollframe:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -28, 12)
+			self.scrollframe:SetWidth(146)
 			self:SetHeight(UIParent:GetHeight()*2/5)
 			self.slider:Show()
 			self:SetScript("OnMouseWheel", OnMouseWheel)
+			self.scrollframe:UpdateScrollChildRect()
 			self.slider:SetMinMaxValues(0, self.contentframe:GetHeight()-self.scrollframe:GetHeight())
 		else
-			self.scrollframe:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -14, 12)
+			self.scrollframe:SetWidth(160)
 			self:SetHeight(self.contentframe:GetHeight()+25)
 			self.slider:Hide()
 			self:SetScript("OnMouseWheel", nil)
+			self.scrollframe:UpdateScrollChildRect()
 			self.slider:SetMinMaxValues(0, 0)
 		end
 		self.contentframe:SetWidth(self.scrollframe:GetWidth())
@@ -205,7 +212,7 @@ do
 		if next(DropDownCache) then
 			frame = table.remove(DropDownCache)
 		else
-			frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+			frame = CreateFrame("Frame", nil, UIParent)
 				frame:SetClampedToScreen(true)
 				frame:SetWidth(188)
 				frame:SetBackdrop(frameBackdrop)
@@ -216,17 +223,12 @@ do
 				contentframe:SetWidth(160)
 				contentframe:SetHeight(0)
 			frame.contentframe = contentframe
-
 			local scrollframe = CreateFrame("ScrollFrame", nil, frame)
-				scrollframe:SetWidth(160)
 				scrollframe:SetPoint("TOPLEFT", frame, "TOPLEFT", 14, -13)
-				scrollframe:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -14, 12)
+				scrollframe:SetPoint("BOTTOM", frame, "BOTTOM", 0, 12)
+				scrollframe:SetWidth(160)
 				scrollframe:SetScrollChild(contentframe)
 			frame.scrollframe = scrollframe
-
-			contentframe:SetPoint("TOPLEFT", scrollframe)
-			contentframe:SetPoint("TOPRIGHT", scrollframe)
-
 			local bgTex = frame:CreateTexture(nil, "ARTWORK")
 				bgTex:SetAllPoints(scrollframe)
 			frame.bgTex = bgTex
@@ -234,8 +236,7 @@ do
 			frame.AddFrame = AddFrame
 			frame.ClearFrames = ClearFrames
 			frame.contentRepo = {} -- store all our frames in here so we can get rid of them later
-
-			local slider = CreateFrame("Slider", nil, scrollframe, "BackdropTemplate")
+			local slider = CreateFrame("Slider", nil, scrollframe)
 				slider:SetOrientation("VERTICAL")
 				slider:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -14, -10)
 				slider:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -14, 10)
