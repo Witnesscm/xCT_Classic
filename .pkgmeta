@@ -1,0 +1,6 @@
+package-as: xCT+
+
+ignore:
+  - .gitignore
+  - .github/*
+  - README.md
