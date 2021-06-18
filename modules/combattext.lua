@@ -1302,7 +1302,7 @@ local CombatEventHandlers = {
 	end,
 
 	["HealingOutgoing"] = function (args)
-		local spellID, isHoT, amount, overhealing, merged = args.spellId, args.prefix == "SPELL_PERIODIC", args.amount, args.overhealing
+		local spellID, isHoT, amount, overhealing, spellName, merged = args.spellId, args.prefix == "SPELL_PERIODIC", args.amount, args.overhealing, args.spellName
 
 		-- Keep track of spells that go by
 		if TrackSpells() then x.spellCache.spells[spellID] = true end
@@ -1340,20 +1340,21 @@ local CombatEventHandlers = {
 		if isHoT then outputColor = "healingOutPeriodic"end
 
 		-- Condensed Critical Merge
-		if IsMerged(spellID) then
+		local mergeID = addon.mergesNameToID[spellName]
+		if mergeID and IsMerged(mergeID) then
 			merged = true
 			if critical then
 				if MergeCriticalsByThemselves() then
-					x:AddSpamMessage(outputFrame, spellID, amount, outputColor)
+					x:AddSpamMessage(outputFrame, mergeID, amount, outputColor)
 					return
 				elseif MergeCriticalsWithOutgoing() then
-					x:AddSpamMessage("outgoing", spellID, amount, outputColor)
+					x:AddSpamMessage("outgoing", mergeID, amount, outputColor)
 				elseif MergeHideMergedCriticals() then
-					x:AddSpamMessage("outgoing", spellID, amount, outputColor)
+					x:AddSpamMessage("outgoing", mergeID, amount, outputColor)
 					return
 				end
 			else
-				x:AddSpamMessage(outputFrame, spellID, amount, outputColor)
+				x:AddSpamMessage(outputFrame, mergeID, amount, outputColor)
 				return
 			end
 		end
@@ -1371,7 +1372,7 @@ local CombatEventHandlers = {
 
 	["DamageOutgoing"] = function (args)
 		local message
-		local critical, spellID, amount, merged = args.critical, args.spellId, args.amount
+		local critical, spellID, amount, spellName, merged = args.critical, args.spellId, args.amount, args.spellName
 		local isEnvironmental, isSwing, isAutoShot, isDoT = args.prefix == "ENVIRONMENTAL", args.prefix == "SWING", spellID == 75, args.prefix == "SPELL_PERIODIC"
 		local outputFrame, outputColorType = "outgoing"
 
@@ -1435,6 +1436,7 @@ local CombatEventHandlers = {
 
 		local outputColor = x.GetSpellSchoolColor(args.spellSchool, outputColorType)
 
+		local mergeID = addon.mergesNameToID[spellName]
 		if (isSwing or isAutoShot) and MergeMeleeSwings() then
 			merged = true
 			if outputFrame == "critical" then
@@ -1451,20 +1453,20 @@ local CombatEventHandlers = {
 				x:AddSpamMessage(outputFrame, spellID, amount, outputColor, 6)
 				return
 			end
-		elseif not isSwing and not isAutoShot and IsMerged(spellID) then
+		elseif not isSwing and not isAutoShot and mergeID and IsMerged(mergeID) then
 			merged = true
 			if critical then
 				if MergeCriticalsByThemselves() then
-					x:AddSpamMessage(outputFrame, spellID, amount, outputColor)
+					x:AddSpamMessage(outputFrame, mergeID, amount, outputColor)
 					return
 				elseif MergeCriticalsWithOutgoing() then
-					x:AddSpamMessage("outgoing", spellID, amount, outputColor)
+					x:AddSpamMessage("outgoing", mergeID, amount, outputColor)
 				elseif MergeHideMergedCriticals() then
-					x:AddSpamMessage("outgoing", spellID, amount, outputColor)
+					x:AddSpamMessage("outgoing", mergeID, amount, outputColor)
 					return
 				end
 			else
-				x:AddSpamMessage(outputFrame, spellID, amount, outputColor)
+				x:AddSpamMessage(outputFrame, mergeID, amount, outputColor)
 				return
 			end
 		end
