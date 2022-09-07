@@ -104,6 +104,13 @@ local function Frame_SendTestMessage_OnUpdate(self, e)
 	end
 end
 
+function x:GetFrame(framename, bypassUpdate)
+	if not bypassUpdate then
+		x:UpdateFrames(specificFrame)
+	end
+	return x.frames[framename]
+end
+
 -- =====================================================
 -- AddOn:UpdateFrames(
 --		specificFrame,	[string] - (Optional) the framename
@@ -159,14 +166,33 @@ function x:UpdateFrames(specificFrame)
 				f:SetFrameStrata(ssub(x.db.profile.frameSettings.frameStrata, 2))
 			end
 
-			--fix
-			if settings.Width <= 0 then settings.Width = addon.defaults.profile.frames[framename].Width end
-			if settings.Height <= 0 then settings.Height = addon.defaults.profile.frames[framename].Height end
-
 			-- Set the position
-			f:SetWidth(settings.Width)
-			f:SetHeight(settings.Height)
-			f:SetPoint("CENTER", settings.X, settings.Y)
+			if settings.enabledFrame then
+				f:SetWidth(settings.Width)
+				f:SetHeight(settings.Height)
+
+				-- WoW's default movement from changing the anchor
+				local point, relativeTo, relativePoint, xOfs, yOfs = unpack(f:GetNumPoints() > 0 and {f:GetPoint(0)} or {})
+
+				-- If the point is not center, then something dirty happened... clean it up
+				if point and point ~= "CENTER" then
+					-- Calculate the center of the screen
+					local ResX, ResY = GetScreenWidth(), GetScreenHeight()
+					local midX, midY = ResX / 2, ResY / 2
+
+					-- Calculate the Top/Left of a frame relative to the center
+					local left, top = mfloor(f:GetLeft() - midX + .5), mfloor(f:GetTop() - midY + .5)
+
+					-- Calculate get the center of the screen from the left/top
+					local x = mfloor(left + (f:GetWidth() / 2) + .5)
+					local y = mfloor(top - (f:GetHeight() / 2) + .5)
+
+					f:ClearAllPoints()
+					f:SetPoint("CENTER", x, y)
+				else
+					f:SetPoint("CENTER", settings.X, settings.Y)
+				end
+			end
 
 			-- For keeping the frame on the screen
 			--f:SetClampRectInsets(0, 0, settings.fontSize, 0)
@@ -270,13 +296,13 @@ end
 function x:Clear(specificFrame)
 	if not specificFrame then
 		for framename, settings in pairs(x.db.profile.frames) do
-			local frame = x.frames[framename]
+			local frame = x:GetFrame(framename)
 			if frame then -- attempt to fix login 'attempt to index nil value frame' error
 				frame:Clear()
 			end
 		end
 	else
-		local frame = x.frames[specificFrame]
+		local frame = x:GetFrame(specificFrame)
 		frame:Clear()
 	end
 end
@@ -378,7 +404,7 @@ end
 --		Sends a message to the framename specified.
 -- =====================================================
 function x:AddMessage(framename, message, colorname)
-	local frame = x.frames[framename]
+	local frame = x:GetFrame(framename, true)
 	local frameOptions = x.db.profile.frames[framename]
 
 	-- Make sure we have a valid frame
@@ -469,7 +495,7 @@ local spam_format = "%s%s x%s"
 --	)
 --		Sends a message to the framename specified.
 -- =====================================================
-function x:AddSpamMessage(framename, mergeID, message, colorname, interval, prep)
+function x:AddSpamMessage(framename, mergeID, message, colorname, interval, prep, ...)
 
 	-- Check for a Secondary Spell ID
 	mergeID = addon.merge2h[mergeID] or mergeID
@@ -501,6 +527,18 @@ function x:AddSpamMessage(framename, mergeID, message, colorname, interval, prep
 			-- color
 			color = colorname,
 		}
+
+		if select("#", ...) % 2 ~= 0 then
+			error("an even amount of extra args are required to add an entry to merge")
+		end
+		--print("extra args pairs:", select("#", ...)/2)
+		for i=1,select("#", ...),2 do
+			if heap[mergeID][select(i, ...)] then
+				error("reserved keyword in entry added to merge: '" .. tostring(select(i, ...)) .. "'")
+			end
+			--print(" -->", select(i, ...), "=", select(i+1, ...))
+			heap[mergeID][select(i, ...)] = select(i+1, ...)
+		end
 		table_insert(stack, mergeID)
 	end
 end
@@ -555,8 +593,10 @@ do
 		spamStack[frameName] = {}
 	end
 
-	local index = 1
-	local frames = {}
+	local index = 1 -- keeps track of the frame
+	local frames = {} -- keeps track of the current stack index for that frame
+
+	local fakeArgs = {}
 
 	function x.OnSpamUpdate(self, elapsed)
 		if not x.db then return end
@@ -566,15 +606,18 @@ do
 
 		-- Check to see if we are out of bounds
 		if index > #frameIndex then index = 1 end
-		if not frames[frameIndex[index]] then
-			frames[frameIndex[index]] = 1
+		local frameName = frameIndex[index]
+
+		-- frame doesn't exist in 'frames' (keeps track of the current stack index for that frame)
+		if not frames[frameName] then
+			frames[frameName] = 1
 		end
 
 		local heap, stack, settings, idIndex =
-			spamHeap[frameIndex[index]],			-- the heap contains merge entries
-			spamStack[frameIndex[index]],			-- the stack contains lookup values
-			x.db.profile.frames[frameIndex[index]],	-- this frame's settings
-			frames[frameIndex[index]]				-- this frame's last entry index
+			spamHeap[frameName],            -- the heap contains merge entries
+			spamStack[frameName],           -- the stack contains lookup values
+			x.db.profile.frames[frameName], -- this frame's settings
+			frames[frameName]               -- this frame's last entry index
 
 		-- If the frame is not enabled, then dont even worry about it
 		if not settings.enabledFrame and settings.secondaryFrame == 0 then
@@ -606,62 +649,68 @@ do
 
 			-- Abbreviate the merged total
 			if tonumber(total) then
-				message = x:Abbreviate(tonumber(total), frameIndex[index])
+				message = x:Abbreviate(tonumber(total), frameName)
 			end
 
 			--local format_mergeCount = "%s |cffFFFFFFx%s|r"
 			local strColor = "ffffff"
 
 			-- Add critical Prefix and Postfix
-			if frameIndex[index] == "critical" then
-				message = format("%s%s%s", x.db.profile.frames["critical"].critPrefix, message, x.db.profile.frames["critical"].critPostfix)
+			if frameName == "outgoing" or frameName == "critical" then
+				if frameName == "critical" then
+					message = format("%s%s%s", settings.critPrefix, message, settings.critPostfix)
+				end
+				if settings.names[item.destinationController].nameType == 2 then
+					if item.auto then
+						fakeArgs.spellName = item.auto
+						fakeArgs.spellSchool = 1 -- physical
+					else
+						fakeArgs.spellName = item.spellName
+						fakeArgs.spellSchool = item.spellSchool
+					end
+					--fakeArgs.fake_sourceController = item.sourceController
+					fakeArgs.fake_destinationController = item.destinationController
+					if settings.fontJustify == "RIGHT" then
+						message = x.formatName(fakeArgs, settings.names) .. " " .. message
+					else
+						message = message .. x.formatName(fakeArgs, settings.names)
+					end
+				end
 
 			-- Show healer name (colored)
-			elseif frameIndex[index] == "healing" then
+			elseif frameName == "healing" then
 				--format_mergeCount = "%s |cffFFFF00x%s|r"
 				local strColor = "ffff00"
-				if x.db.profile.frames["healing"].names.PLAYER.nameType ~= 0 then
-					local healerName = stack[idIndex]
 
-					if x.db.profile.frames["healing"].fontJustify == "LEFT" then
-						message = sformat("+%s%s", message, healerName)
+				if settings.names[item.sourceController].nameType == 1 then
+					fakeArgs.sourceName = stack[idIndex]
+					fakeArgs.sourceGUID = item.sourceGUID
+					fakeArgs.fake_sourceController = item.sourceController
+					if settings.fontJustify == "RIGHT" then
+						message = x.formatName(fakeArgs, settings.names, true) .. " +" .. message
 					else
-						message = sformat("%s +%s", healerName, message)
+						message = "+" .. message .. x.formatName(fakeArgs, settings.names, true)
 					end
 				else
 					message = sformat("+%s", message)
 				end
 			end
 
-			-- Add merge count
-			--if #item.entries > 1 then
-			--	message = sformat(format_mergeCount, message, #item.entries)
-			--end
-			--stack[idIndex], settings.iconsSize, settings.fontJustify
-
 			-- Add Icons
-			if type(stack[idIndex]) == 'number' then
+			if frameName == "outgoing" or frameName == "critical" then
 				message = x:GetSpellTextureFormatted( stack[idIndex],
-				                                  message,
-				                                  settings.iconsEnabled and settings.iconsSize or -1,
-				                                  settings.fontJustify,
-				                                  settings.spacerIconsEnabled,
-				                                  strColor,
-				                                  true, -- Merge Override = true
-				                                  #item.entries )
-			elseif frameIndex[index] == "outgoing" then
-				message = x:GetSpellTextureFormatted( stack[idIndex],
-				                                  message,
-				                                  settings.iconsEnabled and settings.iconsSize or -1,
-				                                  settings.fontJustify,
-				                                  settings.spacerIconsEnabled,
-				                                  strColor,
-				                                  true, -- Merge Override = true
-				                                  #item.entries )
-			else
-				-- This is not needed anymore (was used for healing)
+				                                      message,
+				                                      settings.iconsEnabled and settings.iconsSize or -1,
+				                                      settings.spacerIconsEnabled,
+				                                      settings.fontJustify,
+				                                      strColor,
+				                                      true, -- Merge Override = true
+				                                      #item.entries )
+			elseif frameName == "healing" then
 				if #item.entries > 1 then
 					message = sformat(" |T"..x.BLANK_ICON..":%d:%d:0:0:64:64:5:59:5:59|t %s |cff%sx%s|r", settings.iconsSize, settings.iconsSize, message, strColor, #item.entries)
+				else
+					message = sformat(" |T"..x.BLANK_ICON..":%d:%d:0:0:64:64:5:59:5:59|t %s", settings.iconsSize, settings.iconsSize, message)
 				end
 			end
 
@@ -763,7 +812,8 @@ function x.StartConfigMode()
 
 	for framename, settings in pairs(x.db.profile.frames) do
 		if settings.enabledFrame then
-			local f = x.frames[framename]
+			local f = x:GetFrame(framename)
+
 			f:SetBackdrop( {
 					bgFile	 	= "Interface/Tooltips/UI-Tooltip-Background",
 					edgeFile 	= "Interface/Tooltips/UI-Tooltip-Border",
@@ -868,67 +918,69 @@ function x.EndConfigMode()
 	if x.AlignGrid then x.AlignGrid:Hide() end
 
 	for framename, settings in pairs(x.db.profile.frames) do
-		local f = x.frames[framename]
+		if settings.enabledFrame then
+			local f = x:GetFrame(framename)
 
-		f:SetBackdrop(nil)
+			f:SetBackdrop(nil)
 
-		-- Remove Scripts
-		f:SetScript("OnEnter", nil)
-		f:SetScript("OnLeave", nil)
+			-- Remove Scripts
+			f:SetScript("OnEnter", nil)
+			f:SetScript("OnLeave", nil)
 
-		f.moving:SetScript("OnMouseDown", nil)
-		f.moving:SetScript("OnMouseUp", nil)
-		f.moving:SetScript("OnEnter", nil)
-		f.moving:SetScript("OnLeave", nil)
+			f.moving:SetScript("OnMouseDown", nil)
+			f.moving:SetScript("OnMouseUp", nil)
+			f.moving:SetScript("OnEnter", nil)
+			f.moving:SetScript("OnLeave", nil)
 
-		f.sizing:SetScript("OnMouseDown", nil)
-		f.sizing:SetScript("OnMouseUp", nil)
-		f.sizing:SetScript("OnEnter", nil)
-		f.sizing:SetScript("OnLeave", nil)
+			f.sizing:SetScript("OnMouseDown", nil)
+			f.sizing:SetScript("OnMouseUp", nil)
+			f.sizing:SetScript("OnEnter", nil)
+			f.sizing:SetScript("OnLeave", nil)
 
-		-- Clean up visual items
-		if f.title then
-			f.title:Hide()
-			f.title = nil
+			-- Clean up visual items
+			if f.title then
+				f.title:Hide()
+				f.title = nil
+			end
+
+			if f.moving.d then
+				f.moving.d:Hide()
+				f.moving.d = nil
+			end
+
+			if f.sizing.d then
+				f.sizing.d:Hide()
+				f.sizing.d = nil
+			end
+
+			if f.position then
+				f.position:Hide()
+				f.position = nil
+			end
+
+			if f.width then
+				f.width:Hide()
+				f.width = nil
+			end
+
+			if f.height then
+				f.height:Hide()
+				f.height = nil
+			end
+
+			f:EnableMouse(false)
+
+			-- Hide the sizing frame
+			f.sizing:EnableMouse(false)
+			f.sizing:Hide()
+
+			-- Hide the moving frame
+			f.moving:EnableMouse(false)
+			f.moving:Hide()
+
+			-- Set the Frame Strata
+			f:SetFrameStrata(ssub(x.db.profile.frameSettings.frameStrata, 2))
 		end
-
-		if f.moving.d then
-			f.moving.d:Hide()
-			f.moving.d = nil
-		end
-
-		if f.sizing.d then
-			f.sizing.d:Hide()
-			f.sizing.d = nil
-		end
-
-		if f.position then
-			f.position:Hide()
-			f.position = nil
-		end
-
-		if f.width then
-			f.width:Hide()
-			f.width = nil
-		end
-
-		if f.height then
-			f.height:Hide()
-			f.height = nil
-		end
-
-		f:EnableMouse(false)
-
-		-- Hide the sizing frame
-		f.sizing:EnableMouse(false)
-		f.sizing:Hide()
-
-		-- Hide the moving frame
-		f.moving:EnableMouse(false)
-		f.moving:Hide()
-
-		-- Set the Frame Strata
-		f:SetFrameStrata(ssub(x.db.profile.frameSettings.frameStrata, 2))
 	end
 
 	collectgarbage()
@@ -961,23 +1013,28 @@ end
 function x:SaveAllFrames()
 	for framename, settings in pairs(x.db.profile.frames) do
 		local frame = x.frames[framename]
+		-- If frame is disabled, trying to calculate position will fail
+		if settings.enabledFrame then
+			local x_old, y_old, width_old, height_old = settings.X, settings.Y, settings.Width, settings.Height
 
-		local width = frame:GetWidth()
-		local height = frame:GetHeight()
+			local width = frame:GetWidth()
+			local height = frame:GetHeight()
 
-		settings.Width = mfloor(width + .5)
-		settings.Height = mfloor(height + .5)
+			settings.Width = mfloor(width + .5)
+			settings.Height = mfloor(height + .5)
 
-		-- Calculate the center of the screen
-		local ResX, ResY = GetScreenWidth(), GetScreenHeight()
-		local midX, midY = ResX / 2, ResY / 2
+			-- Calculate the center of the screen
+			local ResX, ResY = GetScreenWidth(), GetScreenHeight()
+			local midX, midY = ResX / 2, ResY / 2
 
-		-- Calculate the Top/Left of a frame relative to the center
-		local left, top = mfloor(frame:GetLeft() - midX + .5), mfloor(frame:GetTop() - midY + .5)
+			-- Calculate the Top/Left of a frame relative to the center
+			local left, top = mfloor(frame:GetLeft() - midX + .5), mfloor(frame:GetTop() - midY + .5)
 
-		-- Calculate get the center of the screen from the left/top
-		settings.X = mfloor(left + (width / 2) + .5)
-		settings.Y = mfloor(top - (height / 2) + .5)
+			-- Calculate get the center of the screen from the left/top
+			settings.X = mfloor(left + (width / 2) + .5)
+			settings.Y = mfloor(top - (height / 2) + .5)
+
+		end
 	end
 end
 
@@ -1036,7 +1093,10 @@ function x.TestMoreUpdate(self, elapsed)
 				if x.db.profile.frames[output].customColor then
 					color = x.db.profile.frames[output].fontColor
 				end
-				message = x:GetSpellTextureFormatted( x.db.profile.frames["outgoing"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["outgoing"].iconsSize, x.db.profile.frames["outgoing"].spacerIconsEnabled, x.db.profile.frames["outgoing"].fontJustify, nil, merged, multistriked )
+				message = x:GetSpellTextureFormatted(
+						x.db.profile.frames["outgoing"].iconsEnabled and GetRandomSpellID() or -1,
+						message, x.db.profile.frames["outgoing"].iconsSize,
+						x.db.profile.frames["outgoing"].spacerIconsEnabled, x.db.profile.frames["outgoing"].fontJustify, nil, merged, multistriked )
 				x:AddMessage(output, message, color)
 			elseif self == x.frames["critical"] and random(2) % 2 == 0 then
 				local output, color = "critical", GetRandomSpellColor()
@@ -1053,7 +1113,16 @@ function x.TestMoreUpdate(self, elapsed)
 				if x.db.profile.frames[output].customColor then
 					color = x.db.profile.frames[output].fontColor
 				end
-				message = x:GetSpellTextureFormatted( x.db.profile.frames["critical"].iconsEnabled and GetRandomSpellID() or -1, message, x.db.profile.frames["critical"].iconsSize, x.db.profile.frames["critical"].fontJustify, x.db.profile.frames["critical"].spacerIconsEnabled, nil, merged, multistriked )
+				message = x:GetSpellTextureFormatted(
+						x.db.profile.frames["critical"].iconsEnabled and GetRandomSpellID() or -1, -- spellID
+						message, -- message
+						x.db.profile.frames["critical"].iconsSize, -- iconSize
+						x.db.profile.frames["critical"].spacerIconsEnabled, -- showInvisibleIcon
+						x.db.profile.frames["critical"].fontJustify, -- justify
+						nil, -- strColor
+						merged, -- mergeOverride
+						multistriked -- entries
+					)
 				x:AddMessage(output, message, color)
 			elseif self == x.frames["damage"] and random(2) % 2 == 0 then
 				local output, color = "damage", {1, random(100) / 255, random(100) / 255}
@@ -1161,7 +1230,7 @@ function x.ToggleTestMode(hidePopup)
 
 			-- Start the Test more
 			for framename, settings in pairs(x.db.profile.frames) do
-				local frame = x.frames[framename]
+				local frame = x:GetFrame(framename)
 				frame.nextUpdate = nil
 				frame.lastUpdate = 0
 				frame:SetScript("OnUpdate", x.TestMoreUpdate)
@@ -1185,7 +1254,7 @@ function x.EndTestMode()
 
 	-- Stop the Test more
 	for framename, settings in pairs(x.db.profile.frames) do
-		local frame = x.frames[framename]
+		local frame = x:GetFrame(framename)
 		frame:SetScript("OnUpdate", nil)
 		frame:Clear()
 	end
@@ -1207,7 +1276,7 @@ StaticPopupDialogs["XCT_PLUS_CONFIGURING"] = {
 
 	button1			= SAVE_CHANGES,
 	button2			= CANCEL,
-	OnAccept		= function() x:SaveAllFrames(); x.EndConfigMode(); x:ShowConfigTool() end,
+	OnAccept		= function() x:SaveAllFrames(); x.EndConfigMode(); x:ShowConfigTool() print(L["|cffFF0000x|r|cffFFFF00CT+|r  Frames have been saved. Please fasten your seat belts."]) end,
 	OnCancel		= function() x:UpdateFrames(); x.EndConfigMode(); x:ShowConfigTool() end,
 	hideOnEscape	= false,
 

@@ -21,6 +21,14 @@ local ADDON_NAME, addon = ...
 -- 'alias' takes the original spell id and a replacement spell id
 local spell, class, spec, alias = unpack(addon.merge_helpers)
 
+class 'DEATHKNIGHT'
+do
+	spec  '250' -- Blood
+
+	spec  '251' -- Frost
+
+	spec  '252' -- Unholy
+end
 
 class 'DRUID'
 do
@@ -29,11 +37,10 @@ do
 	spell '16914'  '3.0'	--  Hurricane
 
 	spec  '103' -- Feral
-	spell '779'    '0.0'	--  Swipe
+	spell '779'    '0.5'	--  Swipe
 	spell '1079'   '3.0'	--  Rip
 	spell '1822'   '3.0'	--  Rake
 	spell '22842'  '3.5'	--  Frenzied Regeneration
-
 
 	spec  '105' -- Restoration
 	spell '774'    '3.5'	--  Rejuvenation
@@ -49,7 +56,7 @@ do
 
 	spec  '254' -- Marksmanship
 	spell '1978'   '3.0'	--  Serpent Sting
-	spell '2643'   '0.0'	--  Multi-Shot
+	spell '2643'   '0.5'	--  Multi-Shot
 	spell '1510'   '1.0'	--  Volley
 
 	spec  '255' -- Survival
@@ -60,19 +67,19 @@ end
 class 'MAGE'
 do
 	spec  '62' -- Arcane
-	spell '1449'   '0.0'	-- Arcane Explosion
+	spell '1449'   '0.5'	-- Arcane Explosion
 	spell '5143'   '1.6'	-- Arcane Missiles
 
 
 	spec  '63' -- Fire
-	spell '2120'   '0.0'	--  Flamestrike
-	spell '11113'  '0.0'	--  Blast Wave
+	spell '2120'   '0.5'	--  Flamestrike
+	spell '11113'  '0.5'	--  Blast Wave
 	spell '12654'  '3.0'	--  Ignite
 
 	spec  '64' -- Frost
-	spell '10'	   '0.0'	--  Blizzard
-	spell '120'    '0.0'	--  Cone of Cold
-	spell '122'    '0.0'	--  Frost Nova
+	spell '10'     '0.5'	--  Blizzard
+	spell '120'    '0.5'	--  Cone of Cold
+	spell '122'    '0.5'	--  Frost Nova
 end
 
 
@@ -97,9 +104,9 @@ do
 
 	spec  '257' -- Holy
 	spell '139'    '3.0'	--  Renew
-	spell '596'    '0.0'	--  Prayer of Healing
+	spell '596'    '0.5'	--  Prayer of Healing
 	spell '14914'  '3.0'	--  Holy Fire
-	spell '23455'  '0.0'	--  Holy Nova
+	spell '23455'  '0.5'	--  Holy Nova
 
 	spec  '258' -- Shadow
 	spell '589'    '4.0'	--  Shadow Word: Pain
@@ -130,7 +137,7 @@ do
 	spell '6363'   '3.0'	--  Searing Bolt
 	spell '8050'   '3.0'	--  Flame Shock
 	spell '8187'   '3.0'	--  Magma Totem
-	spell '8349'   '0.0'	--  Fire Nova
+	spell '8349'   '0.5'	--  Fire Nova
 
 	spec  '263' -- Enhancement
 	spell '10444'  '3.0'	--  Flametongue Attack
@@ -151,7 +158,7 @@ do
 
 	spec  '266' -- Demonlogy
 	spell '20153'  '3.0'	--  Immolation (Infrenal)
-	spell '22703'  '0.0'	--  Infernal Awakening
+	spell '22703'  '0.5'	--  Infernal Awakening
 
 	spec  '267' -- Destruction
 	spell '348'    '3.0'	--  Immolate
@@ -164,7 +171,7 @@ class 'WARRIOR'
 do
 	spec  '71' -- Arms
 	spell '772'    '3.0'	--  Rend
-	spell '6343'   '0.0'	--  Thunder Clap
+	spell '6343'   '0.5'	--  Thunder Clap
 	spell '7384'   '0.5'	--  Overpower (Sweeping Strikes)
 	spell '12294'  '0.5'	--  Mortal Strike (Sweeping Strikes)
 	spell '12162'  '3.0'	--  Deep Wounds
@@ -174,9 +181,8 @@ do
 	spell '1464'   '0.5'	--  Slam (Sweeping Strikes)
 	spell '5308'   '0.5'	--  Execute Arms (Sweeping Strikes)
 	spell '1680'   '0.5'	--  Whirlwind
-	spell '23881'  '0.0'	--  Bloodthirst
+	spell '23881'  '0.5'	--  Bloodthirst
 
 	spec  '73' -- Protection
-	spell '6572'   '0.0'	--  Revenge
-	
+	spell '6572'   '0.5'	--  Revenge
 end

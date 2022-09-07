@@ -61,6 +61,7 @@ L["|cffC79C6EWarrior|r"] = "|cffC79C6E战士|r"
 L["Global Spells"] = "通用技能"
 L["List of Mergeable Spells |cff798BDD(See Category)|r"] = "列出合并的技能|cff798BDD(物品)|r"
 L["Uncheck an item if you do not want it merged. Contact me to add new items. See |cffFFFF00Credits|r for contact info.\n\n"] = "反选你不想合并的物品. 添加物品请与我联系,详情看|cffFFFF00Credits|r 联系信息.\n\n"
+L["Racial Spells"] = "种族技能"
 L["Filters"] = "过滤器"
 L["Minimal Value Thresholds"] = "最小阈值"
 L["|cff798BDDIncoming Player Power Threshold|r: (Mana, Rage, Energy, etc.)"] = "|cff798BDD玩家获得能量阈值|r: (法力, 能量, 怒气等.)"
@@ -575,6 +576,11 @@ L["Subtract the overhealed amount from the Total Amount"] = "从治疗量中扣�
 L["Reset"] = "重置"
 L["Reset Prefix and Postfix to their default setting."] = "重置为默认的前缀和后缀。"
 
+---4.5.7---
+L["Show Absorbs"] = "显示吸收"
+L["Display 'Absorb' when your target absorbs all damage."] = "当你的目标完全吸收伤害时候显示'吸收'"
+
+-- Classic Spec
 L["Arcane"] = "奥术"
 L["Fire"] = "火焰"
 L["Frost"] = "冰霜"
@@ -600,3 +606,5 @@ L["Enhancement"] = "增强"
 L["Affliction"] = "痛苦"
 L["Demonology"] = "恶魔"
 L["Destruction"] = "毁灭"
+L["Blood"] = "鲜血"
+L["Unholy"] = "邪恶"

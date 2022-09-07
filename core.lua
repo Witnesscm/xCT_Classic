@@ -329,7 +329,7 @@ function x:CompatibilityLogic( existing )
         for name, settings in pairs(x.db.profile.frames) do
           if settings.colors then
             for exists in pairs(settings.colors) do
-              if not addon.defaults.profile.frames[name].colors[exists] then
+              if addon.defaults.profile.frames[name] and not addon.defaults.profile.frames[name].colors[exists] then
                 settings.colors[exists] = nil
               end
             end
@@ -410,6 +410,11 @@ local function SpamSpellSet(info, value)
 end
 
 local CLASS_NAMES = {
+  ["DEATHKNIGHT"] = {
+    [250] = 1,   -- Blood
+    [251] = 2,   -- Frost
+    [252] = 3,   -- Unholy
+  },
   ["DRUID"] = {
     [102] = 1,   -- Balance
     [103] = 2,   -- Feral
@@ -470,6 +475,9 @@ x.specName = {
    	[102] = L["Balance"],
    	[103] = L["Feral"],
    	[105] = L["Restoration"],
+   	[250] = L["Blood"],
+   	[251] = L["Frost"],
+   	[252] = L["Unholy"],
    	[253] = L["Beast Mastery"],
    	[254] = L["Marksmanship"],
    	[255] = L["Survival"],
@@ -531,7 +539,12 @@ function x:UpdateSpamSpells()
   local spells = addon.options.args.spells.args.classList.args
   local global = addon.options.args.spells.args.globalList.args
   local racetab = addon.options.args.spells.args.raceList.args
-  
+
+  local ignored = {
+    ["title"] = true,
+    ["mergeListDesc"] = true,
+  }
+
   -- Clear out the old spells
   for class, specs in pairs(CLASS_NAMES) do
     spells[class].args = {}
@@ -550,7 +563,9 @@ function x:UpdateSpamSpells()
 
   -- Clear out the old spells (global)
   for index in pairs(global) do
-    global[index] = nil
+    if not ignored[index] then
+      global[index] = nil
+    end
   end
 
   -- Create a list of the categories (to be sorted)
@@ -586,7 +601,9 @@ function x:UpdateSpamSpells()
 -- Clear out the old spells (racetab)
 -- Dirty add have to reform when better understanding the code
   for index in pairs(racetab) do
-    racetab[index] = nil
+    if not ignored[index] then
+      racetab[index] = nil
+    end
   end
 
   -- Create a list of the categories (to be sorted)

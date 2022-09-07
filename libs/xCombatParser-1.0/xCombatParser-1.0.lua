@@ -150,6 +150,7 @@ do
 		for i=1,n do
 			t[i]=select(i,...)
 		end
+		t.n=n
 		return t
 	end
 end
@@ -179,7 +180,7 @@ do
 	-- Used for Spell Icons ONLY
 	local ENVIRONMENTAL_FAKE_IDS = {
 		["Drowning"] = 131, -- Drowning (Quest in Hillsbrad (Lvl ~22), for Horde only)
-		["Falling"] = 130, -- Falling (Not sure where it is used)
+		["Falling"] = 132301, -- Falling (Not sure where it is used)
 		["Fatigue"] = 700, -- Fatigue (Not sure where it is used)
 		["Fire"] = 818,    -- Fire (Not sure where it is used)
 		["Lava"] = 10854,    -- Lava (New spell mechanic for something in Legion)
@@ -224,6 +225,14 @@ do
 			if event == "DAMAGE_SHIELD" or event == "DAMAGE_SPLIT" then
 				prefix = "SPELL"
 				suffix = "_DAMAGE"
+			elseif event == "SPELL_ABSORBED" then
+				if tempTable.n <= 21 then
+					prefix = "SWING"
+					suffix = "_ABSORBED"
+				else
+					prefix = "SPELL"
+					suffix = "_ABSORBED"
+				end
 			elseif event == "DAMAGE_SHIELD_MISSED" then
 				prefix = "SPELL"
 				suffix = "_MISSED"
@@ -287,13 +296,13 @@ do
 				tempTable[startIndex+i+3], tempTable[startIndex+i+4], tempTable[startIndex+i+5], tempTable[startIndex+i+6],
 				tempTable[startIndex+i+7], tempTable[startIndex+i+8], tempTable[startIndex+i+9]
 
-			--[[ This is for the combat log only
-			elseif suffix == "_DAMAGE_LANDED" then
-				args.amount, args.overkill, args.school,
-				args.resisted, args.blocked, args.absorbed,
-				args.critical, args.glancing, args.crushing,
-				args.isOffHand = select(i, ...)
-			]]
+			elseif suffix == "_ABSORBED" then
+				args.casterGUID, args.casterName, args.casterFlags,
+				args.casterRaidFlags, args.absorbSpellId, args.absorbSpellName,
+				args.absorbSpellSchool, args.amount, args.critical =
+				tempTable[startIndex+i], tempTable[startIndex+i+1], tempTable[startIndex+i+2],
+				tempTable[startIndex+i+3], tempTable[startIndex+i+4], tempTable[startIndex+i+5],
+				tempTable[startIndex+i+6], tempTable[startIndex+i+7], tempTable[startIndex+i+8]
 
 			elseif suffix == "_MISSED" then
 				args.missType, args.isOffHand,

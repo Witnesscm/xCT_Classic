@@ -751,18 +751,18 @@ addon.options.args["spells"] = {
         }]]
 
 
-        --["DEATHKNIGHT"] = { type = 'group', order = 1,  name = L["|cffC41F3BDeath Knight|r"] },
+        ["DEATHKNIGHT"] = { type = 'group', order = 1,  name = L["|cffC41F3BDeath Knight|r"] },
         --["DEMONHUNTER"] = { type = 'group', order = 2,  name = L["|cffA330C9Demon Hunter|r"] },
-        ["DRUID"]       = { type = 'group', order = 1,  name = L["|cffFF7D0ADruid|r"] },
-        ["HUNTER"]      = { type = 'group', order = 2,  name = L["|cffABD473Hunter|r"] },
-        ["MAGE"]        = { type = 'group', order = 3,  name = L["|cff69CCF0Mage|r"] },
+        ["DRUID"]       = { type = 'group', order = 2,  name = L["|cffFF7D0ADruid|r"] },
+        ["HUNTER"]      = { type = 'group', order = 3,  name = L["|cffABD473Hunter|r"] },
+        ["MAGE"]        = { type = 'group', order = 4,  name = L["|cff69CCF0Mage|r"] },
         --["MONK"]        = { type = 'group', order = 6,  name = L["|cff00FF96Monk|r"] },
-        ["PALADIN"]     = { type = 'group', order = 4,  name = L["|cffF58CBAPaladin|r"] },
-        ["PRIEST"]      = { type = 'group', order = 5,  name = L["|cffFFFFFFPriest|r"] },
-        ["ROGUE"]       = { type = 'group', order = 6,  name = L["|cffFFF569Rogue|r"] },
-        ["SHAMAN"]      = { type = 'group', order = 7, name = L["|cff0070DEShaman|r"] },
-        ["WARLOCK"]     = { type = 'group', order = 8, name = L["|cff9482C9Warlock|r"] },
-        ["WARRIOR"]     = { type = 'group', order = 9, name = L["|cffC79C6EWarrior|r"] },
+        ["PALADIN"]     = { type = 'group', order = 5,  name = L["|cffF58CBAPaladin|r"] },
+        ["PRIEST"]      = { type = 'group', order = 6,  name = L["|cffFFFFFFPriest|r"] },
+        ["ROGUE"]       = { type = 'group', order = 7,  name = L["|cffFFF569Rogue|r"] },
+        ["SHAMAN"]      = { type = 'group', order = 8, name = L["|cff0070DEShaman|r"] },
+        ["WARLOCK"]     = { type = 'group', order = 9, name = L["|cff9482C9Warlock|r"] },
+        ["WARRIOR"]     = { type = 'group', order = 10, name = L["|cffC79C6EWarrior|r"] },
 
       },
     },
@@ -787,16 +787,16 @@ addon.options.args["spells"] = {
         },
       },
     },
-	
+
     raceList = {
-      name = "Racial Spells",
+      name = L["Racial Spells"],
       type = 'group',
       order = 23,
       args = {
         title = {
           type = 'description',
           order = 0,
-          name = "List of Mergeable Spells |cff798BDD(See Category)|r",
+          name = L["List of Mergeable Spells |cff798BDD(See Category)|r"],
           fontSize = "large",
           width = "double",
         },
@@ -804,7 +804,7 @@ addon.options.args["spells"] = {
           type = "description",
           order = 1,
           fontSize = "small",
-          name = "Uncheck an item if you do not want it merged. Contact me to add new items. See |cffFFFF00Credits|r for contact info.\n\n",
+          name = L["Uncheck an item if you do not want it merged. Contact me to add new items. See |cffFFFF00Credits|r for contact info.\n\n"],
         },
       },
     },
@@ -1471,38 +1471,64 @@ addon.options.args["Credits"] = {
       name = " |cffAAAAFF Azazu|r,|cff8080EE Broni|r,|cffAAAAFF CursedBunny|r,|cff8080EE Daemios|r,|cffAAAAFF Dajova|r,|cff8080EE Delerionn|r,|cffAAAAFF dunger|r,|cff8080EE feetss|r,|cffAAAAFF gesuntight|r,|cff8080EE Homaxz|r,|cffAAAAFF karamei|r,|cff8080EE Merathilis|r,|cffAAAAFF re1jo|r,|cff8080EE sammael666|r,|cffAAAAFF scathee|r,|cff8080EE Tonyleila|r,|cffAAAAFF Torch|r,|cff8080EE WetU|r,|cffAAAAFF Znuff|r,|cff8080EE Zylos|r\n",
     },
 
-    tukuiTitleBfA = {
+    testerTitleSpace3BFA = {
       type = 'description',
       order = 36,
+      name = " ",
+    },
+    tukuiTitleBfA = {
+      type = 'description',
+      order = 37,
       name = "|cffFFFF00Beta Testers - Version 4.4.0+ (Battle for Azeroth)|r",
       fontSize = "large",
     },
 
     userName3BfA = {
       type = 'description',
-      order = 37,
+      order = 38,
       fontSize = "medium",
       name = " |cffAAAAFF Toludin|r",
     },
 
-    testerTitleSpace4 = {
+    testerTitleSpace_SL = {
       type = 'description',
       order = 40,
+      name = " ",
+    },
+    githubTitleSL = {
+      type = 'description',
+      order = 41,
+      name = "|cffFFFF00Github Contributors - Version 4.5.0+ (Shadowlands)|r",
+      fontSize = "large",
+    },
+    userNameSL = {
+      type = 'description',
+      order = 42,
+      fontSize = "medium",
+      name = " |cff22FF80 oBusk|r,|cff1AAD59 BourgeoisM|r,|cff22FF80 Witnesscm|r",
+    },
+
+    testerTitleSpace4 = {
+      type = 'description',
+      order = 45,
       name = " ",
     },
 
     githubTitle = {
       type = 'description',
-      order = 41,
+      order = 46,
       name = "|cffFFFF00Thank You Github Contributors!|r",
       fontSize = "large",
     },
     userName4 = {
       type = 'description',
-      order = 42,
+      order = 47,
       fontSize = "medium",
       name = " |cff22FF80 Tonyleila|r,|cff1AAD59 ckaotik|r,|cff22FF80 Stanzilla|r,|cff1AAD59 Torch (behub)|r,|cff22FF80 vforge|r,|cff1AAD59 Toludin (BfA Update!)|r",
     },
+
+
+    
 
     testerTitleSpace5 = {
       type = 'description',
@@ -3325,7 +3351,7 @@ addon.options.args["Frames"] = {
               get = get2,
               set = set2,
             },
-            
+
             healingSettings = {
               type = 'description',
               order = 30,
@@ -3445,8 +3471,16 @@ addon.options.args["Frames"] = {
               get = get2,
               set = set2,
             },
-            enablePartialMisses = {
+            enableAbsorbs = {
               order = 53,
+              type = 'toggle',
+              name = L["Show Absorbs"],
+              desc = L["Display 'Absorb' when your target absorbs all damage."],
+              get = get2,
+              set = set2,
+            },
+            enablePartialMisses = {
+              order = 54,
               type = 'toggle',
               name = L["Show Miss Types (Partials)"],
               desc = L["Show when your target takes only a percentage of your damage because it was partially absorbed, resisted, or blocked.\n\n|cffFF0000PLEASE NOTE:|r Only works if the spell is not merged. Turn off the Spell Merger to see all spells."],
@@ -3454,7 +3488,7 @@ addon.options.args["Frames"] = {
               set = set2,
             },
             showHighestPartialMiss = {
-              order = 54,
+              order = 55,
               type = 'toggle',
               name = L["Show the Highest Partial Miss"],
               desc = L["Only show the highest partial miss, instead of all the misses. (Rare, but less spammy)\n\n|cffFF0000PLEASE NOTE:|r Only works if the spell is not merged. Turn off the Spell Merger to see all spells."],
@@ -6300,7 +6334,7 @@ addon.options.args["Frames"] = {
               set = set2,
               width = "normal",
             },
-            
+
 
           },
         },
