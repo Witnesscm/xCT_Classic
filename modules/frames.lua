@@ -380,8 +380,6 @@ function x:Abbreviate(amount, frameName)
 					end
 				end
 			end
-
-			if isNegative then message = '-' .. message end
 		else
 			local k
 			while true do
@@ -390,6 +388,7 @@ function x:Abbreviate(amount, frameName)
 			end
 		end
 	end
+	if isNegative then message = '-' .. message end
 	return message
 end
 
