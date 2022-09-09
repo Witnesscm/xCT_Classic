@@ -180,7 +180,7 @@ do
 	-- Used for Spell Icons ONLY
 	local ENVIRONMENTAL_FAKE_IDS = {
 		["Drowning"] = 131, -- Drowning (Quest in Hillsbrad (Lvl ~22), for Horde only)
-		["Falling"] = 132301, -- Falling (Not sure where it is used)
+		["Falling"] = 55652, -- Falling (Not sure where it is used)
 		["Fatigue"] = 700, -- Fatigue (Not sure where it is used)
 		["Fire"] = 818,    -- Fire (Not sure where it is used)
 		["Lava"] = 10854,    -- Lava (New spell mechanic for something in Legion)
