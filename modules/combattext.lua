@@ -869,9 +869,12 @@ x.events = {
       end
     end,
   ["RUNE_POWER_UPDATE"] = function(slot)
+      if IsResourceDisabled("RUNES") then return end
       if GetRuneCooldown(slot) ~= 0 then return end
-      local message = sformat(format_gain_rune, x.runeIcons[4], COMBAT_TEXT_RUNE_DEATH, x.runeIcons[4])
-      x:AddSpamMessage("power", RUNES, message, x.runecolors[4], 1)
+      local runeType = GetRuneType(slot)
+      local message = sformat(format_gain_rune, x.runeIcons[runeType], _G["COMBAT_TEXT_RUNE_"..runeMapping[runeType]], x.runeIcons[runeType])
+      --x:AddSpamMessage("power", RUNES, message, x.runecolors[runeType], 1)
+      x:AddMessage('power', message, x.runecolors[runeType])
     end,
   ["PLAYER_REGEN_ENABLED"] = function()
       x.inCombat = false
@@ -1351,21 +1354,21 @@ local CombatEventHandlers = {
 		if isHoT then outputColor = "healingOutPeriodic"end
 
 		-- Condensed Critical Merge
-		local mergeID = addon.mergesNameToID[spellName]
-		if mergeID and IsMerged(mergeID) then
+		spellID = addon.mergesNameToID[spellName] or spellID
+		if IsMerged(spellID) then
 			merged = true
 			if critical then
 				if MergeCriticalsByThemselves() then
-					x:AddSpamMessage(outputFrame, mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage(outputFrame, spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 					return
 				elseif MergeCriticalsWithOutgoing() then
-					x:AddSpamMessage("outgoing", mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage("outgoing", spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 				elseif MergeHideMergedCriticals() then
-					x:AddSpamMessage("outgoing", mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage("outgoing", spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 					return
 				end
 			else
-				x:AddSpamMessage(outputFrame, mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+				x:AddSpamMessage(outputFrame, spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 				return
 			end
 		end
@@ -1382,7 +1385,7 @@ local CombatEventHandlers = {
 	end,
 
 	["DamageOutgoing"] = function (args)
-		local message
+		local message, settings
 		local spellName, spellSchool = args.spellName, args.spellSchool
 		local critical, spellID, amount, merged = args.critical, args.spellId, args.amount
 		local isEnvironmental, isSwing, isAutoShot, isDoT = args.prefix == "ENVIRONMENTAL", args.prefix == "SWING", spellID == 75, args.prefix == "SPELL_PERIODIC"
@@ -1448,7 +1451,7 @@ local CombatEventHandlers = {
 
 		local outputColor = x.GetSpellSchoolColor(spellSchool, outputColorType)
 
-		local mergeID = addon.mergesNameToID[spellName]
+		spellID = addon.mergesNameToID[spellName] or spellID
 		if (isSwing or isAutoShot) and MergeMeleeSwings() then
 			merged = true
 			if outputFrame == "critical" then
@@ -1465,21 +1468,21 @@ local CombatEventHandlers = {
 				x:AddSpamMessage(outputFrame, spellID, amount, outputColor, 6, nil, "auto", L_AUTOATTACK, "destinationController", args:GetDestinationController())
 				return
 			end
-		elseif not isSwing and not isAutoShot and mergeID and IsMerged(mergeID) then
+		elseif not isSwing and not isAutoShot and IsMerged(spellID) then
 			merged = true
 			if critical then
 				if MergeCriticalsByThemselves() then
-					x:AddSpamMessage(outputFrame, mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage(outputFrame, spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 					return
 				elseif MergeCriticalsWithOutgoing() then
-					x:AddSpamMessage("outgoing", mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage("outgoing", spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 				elseif MergeHideMergedCriticals() then
-					x:AddSpamMessage("outgoing", mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+					x:AddSpamMessage("outgoing", spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 					return
 				end
 			else
 				-- args:GetSourceController() / args:GetDestinationController()
-				x:AddSpamMessage(outputFrame, mergeID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
+				x:AddSpamMessage(outputFrame, spellID, amount, outputColor, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "destinationController", args:GetDestinationController())
 				return
 			end
 		end
@@ -1833,7 +1836,8 @@ local CombatEventHandlers = {
 	end,
 
 	["SpellEnergize"] = function (args)
-		local amount, energy_type = args.amount, x.POWER_LOOKUP[args.powerType]
+		local amount, energy_type = mfloor(args.amount), x.POWER_LOOKUP[args.powerType]
+		if not energy_type then return end -- WotLK DK runes 
 		if not ShowEnergyGains() then return end
 		if FilterPlayerPower(mabs(tonumber(amount))) then return end
 		if IsResourceDisabled( energy_type, amount ) then return end
