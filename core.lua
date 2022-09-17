@@ -265,7 +265,7 @@ end
 -- This function was created as the central location for crappy code
 function x:CompatibilityLogic( existing )
     local addonVersionString = GetAddOnMetadata("xCT+", "Version")
-    if addonVersionString == "@project-version@" then addonVersionString = "4.6.1" end
+    if addonVersionString and string_find(addonVersionString, "project%-version") then addonVersionString = "4.6.1" end
     local currentVersion = VersionToTable(addonVersionString)
     local previousVersion = VersionToTable(self.db.profile.dbVersion or "4.3.0 Beta 2")
 
