@@ -36,6 +36,11 @@ if not xCP then print("Something went wrong when xCT+ tried to load. Please rein
 local L_AUTOATTACK = GetSpellInfo(6603)
 local L_KILLCOMMAND =  GetSpellInfo(34026)
 
+local replacedTextures = {
+	[136998] = "Interface\\PVPFrame\\PVP-Currency-Alliance",
+	[137000] = "Interface\\PVPFrame\\PVP-Currency-Horde",
+}
+
 --[=====================================================[
  Holds cached spells, buffs, and debuffs
 --]=====================================================]
@@ -1036,7 +1041,8 @@ x.events = {
       end
 
       local currencyInfo = C_CurrencyInfo.GetCurrencyInfoFromLink(currencyLink)
-      local name, amountOwned, texturePath = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
+      local name, amountOwned, icon = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
+      icon = replacedTextures[icon] or icon -- replace classic honor icons
 
       -- format curency
       -- "%s: %s [%s] |cff798BDDx%s|r |cffFFFF00(%s)|r"
@@ -1044,7 +1050,7 @@ x.events = {
         _G.CURRENCY,
         ShowLootIcons()
           and sformat(format_loot_icon,
-            texturePath,
+            icon,
             GetLootIconSize(),
             GetLootIconSize())
           or "",
@@ -1584,10 +1590,10 @@ local CombatEventHandlers = {
 			colorOverride = args.critical and 'spellDamageTakenCritical' or 'spellDamageTaken'
 		end
 
-		if IsMerged(args.spellId) then
+		--[[if IsMerged(args.spellId) then
 			x:AddSpamMessage('damage', args.spellId, args.amount, colorOverride, nil, nil, "spellName", spellName, "spellSchool", spellSchool, "sourceController", args:GetSourceController())
 			return
-		end
+		end]]
 
 		-- Add names
 		message = message .. x.formatName(args, settings.names, true)
