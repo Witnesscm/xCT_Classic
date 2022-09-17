@@ -39,6 +39,8 @@ do
 	spell '55078'   '3.0'	--  Blood Plague
 	spell '51460'   '3.0'	--  Necrosis
 	spell '50526'   '3.0'	--  Wandering Plague
+	spell '52212'   '3.0'	--  Death and Decay
+	spell '47496'   '0.1'	--  Explode
 	spell '49919'   '0.1'	--  Plague Strike (MH/OH Merger)
 end
 
