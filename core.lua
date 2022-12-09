@@ -1888,7 +1888,12 @@ function x:ShowConfigTool(...)
   x.myContainer:SetCallback("OnClose", myContainer_OnRelease)
 
   -- Last minute settings and SHOW
-  x.myContainer.content:GetParent():SetMinResize(803, 300)
+  local myContainerParent = x.myContainer.content:GetParent()
+  if myContainerParent.SetResizeBounds then
+	myContainerParent:SetResizeBounds(803, 300)
+  else
+	myContainerParent:SetMinResize(803, 300)
+  end
 
   -- Go through and select all the groups that are relevant to the player
   if not x.selectDefaultGroups then

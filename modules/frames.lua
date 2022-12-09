@@ -134,8 +134,12 @@ function x:UpdateFrames(specificFrame)
 				f:ClearAllPoints()
 				f:SetMovable(true)
 				f:SetResizable(true)
-				f:SetMinResize(64, 32)
-				f:SetMaxResize(768, 768)
+				if f.SetResizeBounds then
+					f:SetResizeBounds(64, 32, 768, 768)
+				else
+					f:SetMinResize(64, 32)
+					f:SetMaxResize(768, 768)
+				end
 				f:SetClampedToScreen(true)
 				f:SetShadowColor(0, 0, 0, 0)
 
