@@ -147,10 +147,10 @@ end
 class 'SHAMAN'
 do
 	spec  '262' -- Elemental
-	spell '421'    '1.0'	--  Chain Lightning
+	spell '421'    '0.1'	--  Chain Lightning
 	spell '6363'   '3.0'	--  Searing Bolt
 	spell '8050'   '3.0'	--  Flame Shock
-	spell '8187'   '3.0'	--  Magma Totem
+	spell '8187'   '0.1'	--  Magma Totem
 	spell '8349'   '0.1'	--  Fire Nova
 
 	spec  '263' -- Enhancement
@@ -158,8 +158,10 @@ do
 	spell '26545'  '3.0'	--  Lightning Shield
 
 	spec  '264' -- Restoration
-	spell '1064'   '2.0'	--  Chain Heal
-	spell '5672'   '3.0'	--  Healing Stream Totem
+	spell '1064'   '0.1'	--  Chain Heal
+	spell '68883'  '0.1'	--  Healing Stream Totem
+	spell '51945'  '3.0'    --  Earthliving
+	spell '61295'  '3.0'    --  Riptide
 end
 
 
