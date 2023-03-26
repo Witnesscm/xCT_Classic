@@ -134,12 +134,7 @@ function x:UpdateFrames(specificFrame)
 				f:ClearAllPoints()
 				f:SetMovable(true)
 				f:SetResizable(true)
-				if f.SetResizeBounds then
-					f:SetResizeBounds(64, 32, 768, 768)
-				else
-					f:SetMinResize(64, 32)
-					f:SetMaxResize(768, 768)
-				end
+				f:SetResizeBounds(64, 32, 768, 768)
 				f:SetClampedToScreen(true)
 				f:SetShadowColor(0, 0, 0, 0)
 
@@ -194,6 +189,7 @@ function x:UpdateFrames(specificFrame)
 					f:ClearAllPoints()
 					f:SetPoint("CENTER", x, y)
 				else
+					f:ClearAllPoints()
 					f:SetPoint("CENTER", settings.X, settings.Y)
 				end
 			end
