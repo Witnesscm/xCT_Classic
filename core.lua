@@ -273,7 +273,7 @@ function x:CompatibilityLogic( existing )
       currentVersion.devBuild = 1
     end
 
-    if existing then
+    if existing then --[[
       -- Pre-Legion Requires Complete Reset
       if CompareVersions( VersionToTable("4.2.9"), previousVersion) > 0 then
         StaticPopup_Show("XCT_PLUS_DB_CLEANUP_2")
@@ -344,7 +344,7 @@ function x:CompatibilityLogic( existing )
           x.MigratePrint("|cffFFFF00Cleaning Frame DB (Removing Class)|r")
         end
         self.db.profile.frames.class = nil
-      end
+      end--]]
 
     else
       -- Created New: Dont need to do anything right now
@@ -1467,7 +1467,7 @@ end
 
 local function GenerateColorOptionsTable_Entry(colorName, settings, options, index)
   -- Clean the DB of any old/removed values
-  if not settings.desc then return end
+  if not settings.desc or type(settings.desc) ~= "string" then return end
 
   -- Check for nil colors and set them to the default
   if not settings.color or not unpack(settings.color) then
