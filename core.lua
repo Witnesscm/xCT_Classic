@@ -362,37 +362,35 @@ end
 
 local getSpellDescription
 do
-  local Descriptions, description = { }, nil
-  local tooltip = CreateFrame('GameTooltip')
+  local tooltip = CreateFrame('GameTooltip', 'xCT_SpellDescriptionTooltip', nil, 'GameTooltipTemplate')
   tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
 
-  -- Add FontStrings to the tooltip
-  local LeftStrings, temporaryRight = {}, nil
-  for i = 1, 5 do
-    LeftStrings[i] = tooltip:CreateFontString()
-    temporaryRight = tooltip:CreateFontString()
-    LeftStrings[i]:SetFontObject(GameFontNormal)
-    temporaryRight:SetFontObject(GameFontNormal)
-    tooltip:AddFontStrings(LeftStrings[i], temporaryRight)
-  end
-
-  function getSpellDescription(spellID)
-    if Descriptions[spellID] then
-      return Descriptions[spellID]
+  local Descriptions, description = { }, nil
+  
+  function getSpellDescription(spellId)
+    if Descriptions[spellId] then
+      return Descriptions[spellId]
     end
 
-    tooltip:SetSpellByID(spellID)
-
-    description = ""
-    if LeftStrings[tooltip:NumLines()] then
-      description = LeftStrings[ tooltip:NumLines() ]:GetText()
+    tooltip:ClearLines()
+    tooltip:SetSpellByID(spellId)
+    
+    local font
+    for i=4,1,-1 do
+      font = _G['xCT_SpellDescriptionTooltipTextLeft'..i]
+      if font then
+        break
+      end
     end
+
+    description = font:GetText()
 
     if description == "" then
       description = "No Description"
     end
 
-    Descriptions[spellID] = description
+    Descriptions[spellId] = description
+
     return description
   end
 end
