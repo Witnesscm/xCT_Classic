@@ -173,7 +173,6 @@ do
 	spell '18265'  '3.0'	--  Siphon Life
 
 	spec  '266' -- Demonlogy
-	spell '20153'  '3.0'	--  Immolation (Infrenal)
 	spell '22703'  '0.1'	--  Infernal Awakening
 
 	spec  '267' -- Destruction

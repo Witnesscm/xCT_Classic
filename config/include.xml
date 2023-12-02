@@ -1,5 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="merge_init.lua"/>
 	<Script file="merge_class.lua"/>
+	<Script file="merge_item.lua"/>
+	<Script file="merge_race.lua"/>
 	<Script file="profile.lua"/>
 </Ui>
