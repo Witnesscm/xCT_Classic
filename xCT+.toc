@@ -1,4 +1,4 @@
-## Interface: 30403
+## Interface: 40400, 11502
 ## Title: xCT+
 ## Notes: An Add-On that can out-perform or enhance the default Floating Combat Text!
 ## Author: Dandruff-Stormreaver US
