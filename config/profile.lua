@@ -58,7 +58,7 @@ function addon.GenerateDefaultSpamSpells()
     default[id].enabled = true
 
     local name = GetSpellInfo(id)
-    if name then
+    if name and addon.IsClassic then
       addon.mergesNameToID[name] = id
     end
   end

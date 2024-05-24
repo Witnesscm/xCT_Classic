@@ -23,6 +23,9 @@ xCT_Plus = addon.engine
 -- No Operation
 addon.noop = noop
 
+addon.IsClassic = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC
+addon.IsCata = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC
+
 local L = {}
 setmetatable(L, {
     __index = function(self, key) return key end
