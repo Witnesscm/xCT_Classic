@@ -35,6 +35,7 @@ if not xCP then print("Something went wrong when xCT+ tried to load. Please rein
 
 local L_AUTOATTACK = GetSpellInfo(6603)
 local L_KILLCOMMAND =  GetSpellInfo(34026)
+local KILLCOMMAND_ID = 83381
 
 local replacedTextures = {
 	[136998] = "Interface\\PVPFrame\\PVP-Currency-Alliance",
@@ -1414,12 +1415,11 @@ local CombatEventHandlers = {
 		if IsSpellFiltered(spellID) or FilterOutgoingDamage(amount) then return end
 
 		-- Check to see if my pet is doing things
-		if args:IsSourceMyPet() and (not ShowKillCommand() or spellID ~= 34026) then
-			if not ShowPetDamage() then return end
+		if args:IsSourceMyPet() then
 			if isSwing and not ShowPetAutoAttack_Outgoing() then return end
 			if MergePetAttacks() then
 				local icon = x.GetPetTexture() or ""
-				x:AddSpamMessage(outputFrame, icon, amount, x.db.profile.spells.mergePetColor, 6, nil, "auto", spellID == 34026 and L_KILLCOMMAND or L_AUTOATTACK, "destinationController", args:GetDestinationController())
+				x:AddSpamMessage(outputFrame, icon, amount, x.db.profile.spells.mergePetColor, 6, nil, "auto", spellID == KILLCOMMAND_ID and L_KILLCOMMAND or L_AUTOATTACK, "destinationController", args:GetDestinationController())
 				return
 			end
 			if not ShowPetCrits() then
@@ -1949,6 +1949,10 @@ local AbsorbList = {
 }
 
 function x.CombatLogEvent (args)
+	if args:IsSourceMyPet() and args.spellId == KILLCOMMAND_ID and ShowKillCommand() then
+		args.isPlayer = true
+	end
+
 	-- Is the source someone we care about?
 	if args.isPlayer or args:IsSourceMyVehicle() or ShowPetDamage() and args:IsSourceMyPet() then
 		if args.suffix == "_HEAL" then
