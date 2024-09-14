@@ -150,7 +150,7 @@ frameUpdate:SetScript("OnEvent", function(self)
   self:UnregisterEvent("PLAYER_ENTERING_WORLD")
   x:UpdateFrames()
   x.cvar_update()
-  x.UpdateBlizzardOptions()
+  --x.UpdateBlizzardOptions()
 end)
 
 -- Version Compare Helpers... Yeah!

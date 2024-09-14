@@ -1843,7 +1843,10 @@ local CombatEventHandlers = {
 
 	["SpellEnergize"] = function (args)
 		local amount, energy_type = mfloor(args.amount), x.POWER_LOOKUP[args.powerType]
-		if not energy_type then return end -- WotLK DK runes 
+		if not energy_type then 
+		    print('xct: unknown SpellEnergize power type: ' .. args.powerType) 
+		    return 
+		end
 		if not ShowEnergyGains() then return end
 		if FilterPlayerPower(mabs(tonumber(amount))) then return end
 		if IsResourceDisabled( energy_type, amount ) then return end
