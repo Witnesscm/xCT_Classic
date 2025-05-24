@@ -1,5 +1,5 @@
 # xCT+ (Classic)
-xCT+ for WoW WotLK Classic (3.4.0) and Classic Era (1.15.0)
+xCT+ for Mists of Pandaria Classic (5.5.0) , WotLK Classic (3.4.4) and Classic Era (1.15.7) 
 
 
 Fork from https://github.com/dandruff/xCT
