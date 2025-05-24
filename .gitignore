@@ -1,0 +1,5 @@
+.vscode
+libs/*
+!libs/include.xml
+!libs/UTF8
+!libs/xCombatParser-1.0
