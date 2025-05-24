@@ -38,7 +38,7 @@ end
 -- Creating an Config
 addon.options = {
   -- Add a place for the user to grab
-  name = "                                                      " .. "Version: "..(GetAddOnMetadata("xCT+", "Version") or "Unknown") .. "                                                      ",
+  name = "                                                      " .. "Version: "..(C_AddOns.GetAddOnMetadata("xCT+", "Version") or "Unknown") .. "                                                      ",
   handler = x,
   type = 'group',
   args = {
@@ -68,7 +68,7 @@ addon.options = {
     --[[xCT_Header = {
       order = 10,
       type = "header",
-      name = "Version: "..(GetAddOnMetadata("xCT+", "Version") or "Unknown"),
+      name = "Version: "..(C_AddOns.GetAddOnMetadata("xCT+", "Version") or "Unknown"),
       width = "full",
     },]]
 
