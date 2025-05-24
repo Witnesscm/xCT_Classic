@@ -765,7 +765,7 @@ local function LootFrame_OnUpdate(self, elapsed)
 
     -- Time to wait before showing a looted item
     if item.t > 0.5 then
-      x:AddMessage("loot", sformat(item.message, sformat(format_lewtz_total, GetItemCount(item.id))), {item.r, item.g, item.b})
+      x:AddMessage("loot", sformat(item.message, sformat(format_lewtz_total, C_Item.GetItemCount(item.id))), {item.r, item.g, item.b})
       removeItems[i] = true
     end
   end
@@ -940,7 +940,7 @@ x.events = {
       --"([^|]*)|cff(%x*)|H([^:]*):(%d+):%d+:(%d+):[-?%d+:]+|h%[?([^%]]*)%]|h|r?%s?x?(%d*)%.?"
       -- "|cff0070dd|Hbattlepet:1343:1:3:158:10:12:BattlePet-0-000002C398CB|h[Bonkers]|h|r" - C_PetJournal.GetPetInfoBySpeciesID(1343)
       -- "|cff9d9d9d|Hbattlepet:467:1:0:140:9:9:BattlePet-0-000002C398C4|h[Dung Beetle]|h|r" - C_PetJournal.GetPetInfoBySpeciesID(467)
-      -- GetItemQualityColor(3)
+      -- C_Item.GetItemQualityColor(3)
 
       -- local format_getItemString = "([^|]+)|cff(%x+)|H([^|]+)|h%[([^%]]+)%]|h|r[^%d]*(%d*)"
       -- "|cffffffff|Hitem:119299::::::::100:252::::::|h[드레노어 기계공학의 비밀]|h|r을 만들었습니다."
@@ -958,7 +958,7 @@ x.events = {
         local petTypeName = PET_TYPE_SUFFIX[petType]
         local message = sformat(format_pet, speciesName, petTypeName)
 
-        local r, g, b = GetItemQualityColor(linkQuality or 0)
+        local r, g, b = C_Item.GetItemQualityColor(linkQuality or 0)
 
         -- Add the message
         x:AddMessage("loot", message, { r, g, b } )
@@ -970,7 +970,7 @@ x.events = {
         local crafted, looted, pushed = (preMessage == format_crafted), (preMessage == format_looted), (preMessage == format_pushed)
 
         -- Item Quality, See "GetAuctionItemClasses()" For Type and Subtype, Item Icon Texture Location
-        local itemQuality, _, _, itemType, itemSubtype, _, _, itemTexture = select(3, GetItemInfo(linkID))
+        local itemQuality, _, _, itemType, itemSubtype, _, _, itemTexture = select(3, C_Item.GetItemInfo(linkID))
 
         -- Item White-List Filter
         local listed = x.db.profile.spells.items[itemType] and (x.db.profile.spells.items[itemType][itemSubtype] == true)
@@ -985,7 +985,7 @@ x.events = {
            (crafted and ShowLootCrafted()) or
            (pushed and ShowLootPurchased()) then
 
-          local r, g, b = GetItemQualityColor(itemQuality)
+          local r, g, b = C_Item.GetItemQualityColor(itemQuality)
           -- "%s%s: %s [%s]%s %%s"
           local message = sformat(format_lewtz,
               ShowLootItemTypes() and itemType or "Item",		-- Item Type
@@ -1073,7 +1073,7 @@ x.events = {
       if ShowColorBlindMoney() then
         o = o..(g and g.." G " or "")..(s and s.." S " or "")..(c and c.." C " or "")
       else
-        o = o..GetCoinTextureString(money).." "
+        o = o..C_CurrencyInfo.GetCoinTextureString(money).." "
       end
 
       -- This only works on english clients :\

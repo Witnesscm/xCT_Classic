@@ -1216,7 +1216,7 @@ function x.TestMoreUpdate(self, elapsed)
 					if not g and not s and not c then return end
 					x:AddMessage(output, MONEY .. ": " .. message, color)
 				else
-					x:AddMessage(output, MONEY .. ": " .. GetCoinTextureString(random(1000000)), color)
+					x:AddMessage(output, MONEY .. ": " .. C_CurrencyInfo.GetCoinTextureString(random(1000000)), color)
 				end
 			end
 		end
