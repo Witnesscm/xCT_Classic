@@ -1,4 +1,5 @@
 .vscode
+.editorconfig
 libs/*
 !libs/include.xml
 !libs/UTF8
