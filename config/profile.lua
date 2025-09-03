@@ -867,8 +867,11 @@ addon.defaults = {
           ['color_LUNAR_POWER']          = { enabled = false, desc = LUNAR_POWER,          default = { 0.30, 0.52, 0.90 } },
           ['color_INSANITY_POWER']       = { enabled = false, desc = INSANITY_POWER,       default = { 0.40, 0.00, 0.80 } },
           ['color_MAELSTROM_POWER']      = { enabled = false, desc = MAELSTROM_POWER,      default = { 0.00, 0.50, 1.00 } },
-          ['color_ALTERNATE_POWER'] = { enabled = false, desc = ALTERNATE_POWER_TEXT, default = { 0.10, 0.10, 0.98 } },
+          ['color_ALTERNATE_POWER']      = { enabled = false, desc = ALTERNATE_POWER_TEXT, default = { 0.10, 0.10, 0.98 } },
           ['color_ARCANE_CHARGES_POWER'] = { enabled = false, desc = ARCANE_CHARGES_POWER, default = { 0.10, 0.10, 0.98 } },
+
+          ['color_BALANCE_positive']     = { enabled = false, desc = BALANCE_POSITIVE_ENERGY, default = { 0.80, 0.82, 0.60 } },
+          ['color_BALANCE_negative']     = { enabled = false, desc = BALANCE_NEGATIVE_ENERGY, default = { 0.30, 0.52, 0.90 } },
         },
 
         -- scrollable
@@ -907,6 +910,9 @@ addon.defaults = {
         ["disableResource_ARCANE_CHARGES"]   = false,
         ["disableResource_FURY"]             = false,
         ["disableResource_PAIN"]             = false,
+
+        ["disableResource_BALANCE_positive"] = false,
+        ["disableResource_BALANCE_negative"] = false,
       },
 
       procs = {

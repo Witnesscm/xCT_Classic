@@ -76,25 +76,26 @@ end
  Power Type Definitions
 --]=====================================================]
 x.POWER_LOOKUP = {
-	[0] = "MANA",
-	[1] = "RAGE",
-	[2] = "FOCUS",
-	[3] = "ENERGY",
-	[4] = "COMBO_POINTS",
-	[5] = "RUNES",
-	[6] = "RUNIC_POWER",
-	[7] = "SOUL_SHARDS",
-	[8] = "LUNAR_POWER",
-	[9] = "HOLY_POWER",
-	[10] = "ALTERNATE_POWER_INDEX",
-	[11] = "MAELSTROM",
-	[12] = "CHI",
-	[13] = "INSANITY",
-	[14] = "BURNING_EMBERS",
-	[15] = "DEMONIC_FURY",
-	[16] = "ARCANE_CHARGES",
-	[17] = "FURY",
-	[18] = "PAIN",
+	[Enum.PowerType.Mana] = "MANA",
+	[Enum.PowerType.Rage] = "RAGE",
+	[Enum.PowerType.Focus] = "FOCUS",
+	[Enum.PowerType.Energy] = "ENERGY",
+	[Enum.PowerType.ComboPoints] = "COMBO_POINTS",
+	[Enum.PowerType.Runes] = "RUNES",
+	[Enum.PowerType.RunicPower] = "RUNIC_POWER",
+	[Enum.PowerType.SoulShards] = "SOUL_SHARDS",
+	[Enum.PowerType.LunarPower] = "LUNAR_POWER",
+	[Enum.PowerType.HolyPower] = "HOLY_POWER",
+	[Enum.PowerType.Alternate] = "ALTERNATE_POWER_INDEX",
+	[Enum.PowerType.Maelstrom] = "MAELSTROM",
+	[Enum.PowerType.Chi] = "CHI",
+	[Enum.PowerType.Insanity] = "INSANITY",
+	[Enum.PowerType.BurningEmbers] = "BURNING_EMBERS",
+	[Enum.PowerType.DemonicFury] = "DEMONIC_FURY",
+	[Enum.PowerType.ArcaneCharges] = "ARCANE_CHARGES",
+	[Enum.PowerType.Fury] = "FURY",
+	[Enum.PowerType.Pain] = "PAIN",
+	[Enum.PowerType.Balance] = "BALANCE",
 }
 
 
@@ -312,11 +313,11 @@ end
 local function TrackSpells() return x.db.profile.spellFilter.trackSpells end
 
 local function IsResourceDisabled( resource, amount )
-	if resource == "ECLIPSE" then
+	if resource == "BALANCE" then
 		if amount > 0 then
-			return x.db.profile.frames["power"].disableResource_ECLIPSE_positive
+			return x.db.profile.frames["power"].disableResource_BALANCE_positive
 		elseif amount < 0 then
-			return x.db.profile.frames["power"].disableResource_ECLIPSE_negative
+			return x.db.profile.frames["power"].disableResource_BALANCE_negative
 		end
 	end
 	if x.db.profile.frames["power"]["disableResource_"..resource] ~= nil then
@@ -1843,30 +1844,36 @@ local CombatEventHandlers = {
 
 	["SpellEnergize"] = function (args)
 		local amount, energy_type = mfloor(args.amount), x.POWER_LOOKUP[args.powerType]
-		if not energy_type then 
-		    print('xct: unknown SpellEnergize power type: ' .. args.powerType) 
-		    return 
+		if not energy_type then
+		    -- print('xct: unknown SpellEnergize power type: ' .. args.powerType)
+		    return
 		end
 		if not ShowEnergyGains() then return end
 		if FilterPlayerPower(mabs(tonumber(amount))) then return end
 		if IsResourceDisabled( energy_type, amount ) then return end
 
-		local color, message = nil, x:Abbreviate( amount, "power" )
-		if energy_type == "ECLIPSE" then
+		local color
+		local energy_name = _G[energy_type]
+		if energy_type == "BALANCE" then
 			if amount > 0 then
-				color = x.LookupColorByName("color_ECLIPSE_positive")
+				color = x.LookupColorByName("color_BALANCE_positive")
+				energy_name = BALANCE_POSITIVE_ENERGY
 			elseif amount < 0 then
-				color = x.LookupColorByName("color_ECLIPSE_negative")
+				color = x.LookupColorByName("color_BALANCE_negative")
+				amount = -amount
+				energy_name = BALANCE_NEGATIVE_ENERGY
 			end
 		else
 			color = x.LookupColorByName("color_" .. energy_type )
 		end
 
+		local message = x:Abbreviate( amount, "power" )
+
 		-- Default Color will be white
 		if not color then
 			color = {1,1,1}
 		end
-		x:AddMessage("power", sformat(format_energy, message, ShowEnergyTypes() and _G[energy_type] or ""), color)
+		x:AddMessage("power", sformat(format_energy, message, ShowEnergyTypes() and energy_name or ""), color)
 	end,
 }
 
