@@ -13,11 +13,6 @@
  [====================================]]
 
 local ADDON_NAME, addon = ...
-
--- New way of doing merge items
--- 'alias' takes the original spell id and a replacement spell id
--- item takes a item id, the merge interval in seconds, and a helpful description of the item
--- header switches the header for the next set of items
 local _, _, _, alias, item, header = unpack(addon.merge_helpers)
 
 --[[

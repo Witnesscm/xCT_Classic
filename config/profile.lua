@@ -47,23 +47,6 @@ end
 -- Upvalue
 local tostring = tostring
 
-
--- Add Merge Spell to the DB before it gets used by the profile
-addon.mergesNameToID = {}
-
-function addon.GenerateDefaultSpamSpells()
-  local default = addon.defaults.profile.spells.merge
-  for id, item in pairs(addon.merges) do
-    default[id] = item
-    default[id].enabled = true
-
-    local name = GetSpellInfo(id)
-    if name and addon.IsClassic then
-      addon.mergesNameToID[name] = id
-    end
-  end
-end
-
 addon.defaults = {
   profile = {
     showStartupText = true,

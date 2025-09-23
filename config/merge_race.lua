@@ -14,13 +14,17 @@
 
 local ADDON_NAME, addon = ...
 
--- New way of doing merge spells
--- 'rspell' takes a spell id and a merge interval in seconds
-local _, _, _, _, _, _, race, rspell = unpack(addon.merge_helpers)
+-- The order here is relevant!
+local _, _, _, _, _, header, racial_spell = unpack(addon.merge_helpers)
 
 --[[
-race "|cfff2ff00Races|r™ |cff8a8dedVoid Elfs|r"
+header(C_CreatureInfo.GetRaceInfo(30).raceName) -- Lightforged Draenei
 do
-	rspell '259756' '2.5' --  Entropic embrace
+    racial_spell(256893, 1.0) -- Light's Judgment
+end
+
+header(C_CreatureInfo.GetRaceInfo(29).raceName) -- Void Elf
+do
+    racial_spell(259756, 2.5) --  Entropic embrace
 end
 ]]

@@ -95,9 +95,6 @@ function x:OnInitialize()
   -- Check for new installs
   self.existingProfile = CheckExistingProfile()
 
-  -- Generate Dynamic Merge Entries
-  addon.GenerateDefaultSpamSpells()
-
   -- Clean Up Colors in the DB
   addon.LoadDefaultColors()
 
@@ -273,81 +270,7 @@ function x:CompatibilityLogic( existing )
       currentVersion.devBuild = 1
     end
 
-    if existing then --[[
-      -- Pre-Legion Requires Complete Reset
-      if CompareVersions( VersionToTable("4.2.9"), previousVersion) > 0 then
-        StaticPopup_Show("XCT_PLUS_DB_CLEANUP_2")
-        return false -- Do not continue loading addon
-      end
-
-      -- 4.3.0 Beta 3 -> Removes Spell School Colors from Outgoing fraame settings
-      if CompareVersions( VersionToTable("4.3.0 Beta 3"), previousVersion) > 0 then
-        if currentVersion.devBuild then
-          x.MigratePrint("|cff798BDDSpell School Colors|r (|cffFFFF00From: Config Tool->Frames->Outgoing|r | |cff00FF00To: Config Tool->Spell School Colors|r)")
-        end
-        if x.db.profile.frames.outgoing.colors.spellSchools then
-          local oldDB = x.db.profile.frames.outgoing.colors.spellSchools.colors
-          local newDB = x.db.profile.SpellColors
-          local keys = {
-            ['SpellSchool_Physical'] = "1",
-            ['SpellSchool_Holy']     = "2",
-            ['SpellSchool_Fire']     = "4",
-            ['SpellSchool_Nature']   = "8",
-            ['SpellSchool_Frost']    = "16",
-            ['SpellSchool_Shadow']   = "32",
-            ['SpellSchool_Arcane']   = "64",
-          }
-          for oldKey, newKey in pairs(keys) do
-            if oldDB[oldKey] then
-              newDB[newKey].enabled = oldDB[oldKey].enabled
-              newDB[newKey].color = oldDB[oldKey].color
-            end
-          end
-          x.db.profile.frames.outgoing.colors.spellSchools = nil
-        end
-      end
-
-
-      -- 4.3.0 Beta 4 -> Remove redundent Merge Entries from the Config
-      if CompareVersions( VersionToTable("4.3.0 Beta 5"), previousVersion) > 0 then
-        if currentVersion.devBuild then
-          x.MigratePrint("|cff798BDDMerge Entries:|r (|cffFFFF00Optimizing SavedVars|r)")
-        end
-        local merge = x.db.profile.spells.merge
-        for id, entry in pairs(merge) do
-          merge[id] = nil
-          if not entry.enabled and addon.merges[id] then
-            merge[id] = { enabled = false }
-          end
-        end
-      end
-
-      -- Clean up colors names in the database
-      if CompareVersions( VersionToTable("4.3.3 Beta 1"), previousVersion) > 0 then
-        if currentVersion.devBuild then --currentVersion.devBuild then
-          x.MigratePrint("|cff798BDDCustom Colors|r (|cffFFFF00From: Config Tool->Frames-> All Frames ->Colors|r) Removing old options.")
-        end
-        for name, settings in pairs(x.db.profile.frames) do
-          if settings.colors then
-            for exists in pairs(settings.colors) do
-              if addon.defaults.profile.frames[name] and not addon.defaults.profile.frames[name].colors[exists] then
-                settings.colors[exists] = nil
-              end
-            end
-          end
-        end
-      end
-
-      -- Clean up class frame from database
-      if CompareVersions( VersionToTable("4.5.1-beta5"), previousVersion ) > 0 then
-        if currentVersion.devBuild then --currentVersion.devBuild then
-          x.MigratePrint("|cffFFFF00Cleaning Frame DB (Removing Class)|r")
-        end
-        self.db.profile.frames.class = nil
-      end--]]
-
-    else
-      -- Created New: Dont need to do anything right now
+    if existing then
     end
     self.db.profile.dbVersion = addonVersionString
 
@@ -393,19 +316,6 @@ do
 
     return description
   end
-end
-
--- Spammy Spell Get/Set Functions
-local function SpamSpellGet(info)
-  local id = tonumber(info[#info])
-  local db = x.db.profile.spells.merge[id] or addon.defaults.profile.spells.merge[id]
-  return db.enabled
-end
-local function SpamSpellSet(info, value)
-  local id = tonumber(info[#info])
-  local db = x.db.profile.spells.merge[id] or {}
-  db.enabled = value
-  x.db.profile.spells.merge[id] = db
 end
 
 local CLASS_NAMES = {
@@ -494,12 +404,6 @@ x.specName = {
    	[267] = L["Destruction"],
 }
 
-function x.GenerateDefaultSpamSpells()
-  local defaults = addon.defaults.spells.merge
-
-end
-
-
 local function cleanColors(colorTable)
   for index, color in pairs(colorTable) do
     if color.colors then
@@ -521,175 +425,171 @@ end
 
 -- Gets spammy spells from the database and creates options
 function x:UpdateSpamSpells()
-  --[[ Update our saved DB
-  for id, item in pairs(addon.merges) do
-    if not self.db.profile.spells.merge[id] then
-      self.db.profile.spells.merge[id] = item
-      self.db.profile.spells.merge[id]['enabled'] = true    -- default all to on
-    else
-    -- update merge setting incase they are outdated
-      self.db.profile.spells.merge[id].interval = item.interval
-      self.db.profile.spells.merge[id].prep = item.prep
-      self.db.profile.spells.merge[id].desc = item.desc
-      self.db.profile.spells.merge[id].class = item.class
+    local function SpamMergerGetSpellInterval(info)
+        local spellId = tonumber(info[#info])
+        if x.db.profile.spells.merge[spellId] ~= nil and x.db.profile.spells.merge[spellId].interval ~= nil then
+            return x.db.profile.spells.merge[spellId].interval
+        end
+        return addon.merges[spellId].interval or 0
     end
-  end]]
 
-  local spells = addon.options.args.spells.args.classList.args
-  local global = addon.options.args.spells.args.globalList.args
-  local racetab = addon.options.args.spells.args.raceList.args
-
-  local ignored = {
-    ["title"] = true,
-    ["mergeListDesc"] = true,
-  }
-
-  -- Clear out the old spells
-  for class, specs in pairs(CLASS_NAMES) do
-    spells[class].args = {}
-    for spec, index in pairs(specs) do
-      local name, _ = "All Specializations"
-      if index ~= 0 then
-        name = x.specName[spec]
-      end
-      spells[class].args["specHeader"..index] = {
-        type = 'header',
-        order = index * 2,
-        name = name,
-      }
+    local function SpamMergerSetSpellInterval(info, value)
+        local spellId = tonumber(info[#info])
+        local db = x.db.profile.spells.merge[spellId] or {}
+        db.interval = value
+        x.db.profile.spells.merge[spellId] = db
     end
-  end
 
-  -- Clear out the old spells (global)
-  for index in pairs(global) do
-    if not ignored[index] then
-      global[index] = nil
+    local spells = addon.options.args.spells.args.classList.args
+    local global = addon.options.args.spells.args.globalList.args
+    local racetab = addon.options.args.spells.args.raceList.args
+
+    for class, specs in pairs(CLASS_NAMES) do
+        spells[class].args = {}
+        for spec, index in pairs(specs) do
+            local name, _ = "All Specializations"
+            if index ~= 0 then
+                _, name = GetSpecializationInfoByID(spec)
+            end
+
+            spells[class].args["specHeader" .. index] = {
+                type = "header",
+                order = index * 2,
+                name = name,
+            }
+        end
     end
-  end
 
-  -- Create a list of the categories (to be sorted)
-  local categories = {}
-  for _, entry in pairs(addon.merges) do
-
-    --TODO better code when i understand more the code
-
-    if not CLASS_NAMES[entry.class] and entry.desc ~= "Racial Spell" then
-      table.insert(categories, entry.class)
+    -- Create a list of the categories (to be sorted)
+    local spamMergerGlobalSpellCategories = {}
+    local spamMergerRacialSpellCategories = {}
+    for _, entry in pairs(addon.merges) do
+        if not CLASS_NAMES[entry.category] then
+            if entry.racial_spell then
+                table.insert(
+                    spamMergerRacialSpellCategories,
+                    { category = entry.category, order = entry.categoryOrder }
+                )
+            else
+                table.insert(
+                    spamMergerGlobalSpellCategories,
+                    { category = entry.category, order = entry.categoryOrder }
+                )
+            end
+        end
     end
-  end
 
-  -- Show Categories in alphabetical order
-  table.sort(categories)
-
-  -- Assume less than 1000 entries per category ;)
-  local categoryOffsets = {}
-  for i, category in pairs(categories) do
-    local currentIndex = i * 1000
-
-    -- Create the Category Header
-    global[category] = {
-      type = 'description',
-      order = currentIndex,
-      name = "\n"..category,
-      fontSize = 'large',
-    }
-    categoryOffsets[category] = currentIndex + 1
-  end
-
-------------------------------------------------------
--- Clear out the old spells (racetab)
--- Dirty add have to reform when better understanding the code
-  for index in pairs(racetab) do
-    if not ignored[index] then
-      racetab[index] = nil
+    -- Show Categories in insert order
+    local function sortTableByOrder(a, b)
+        return a.order < b.order
     end
-  end
+    table.sort(spamMergerGlobalSpellCategories, sortTableByOrder)
+    table.sort(spamMergerRacialSpellCategories, sortTableByOrder)
 
-  -- Create a list of the categories (to be sorted)
-  local rcategories = {}
-  for _, entry in pairs(addon.merges) do
-    --TODO better code when i understand more the code
-    if not CLASS_NAMES[entry.class] and entry.desc == "Racial Spell" then
-      table.insert(rcategories, entry.class)
-    end
-  end
+    -- Assume less than 1000 entries per category ;)
+    local spamMergerGlobalSpellOrders = {}
+    for i, category in pairs(spamMergerGlobalSpellCategories) do
+        local currentIndex = i * 1000
 
-  -- Show Categories in alphabetical order
-  table.sort(rcategories)
+        -- TODO localization for category.category?
 
-  -- Assume less than 1000 entries per category ;)
-  local rcategoryOffsets = {}
-  for i, rcategory in pairs(rcategories) do
-    local rcurrentIndex = i * 1000
-
-    -- Create the Category Header
-    racetab[rcategory] = {
-      type = 'description',
-      order = rcurrentIndex,
-      name = "\n"..rcategory,
-      fontSize = 'large',
-    }
-    rcategoryOffsets[rcategory] = rcurrentIndex + 1
-  end
-------------------------------------------------------
-
-
-
-
-  -- Update the UI
-  for spellID, entry in pairs(addon.merges) do
-    local name = GetSpellInfo(spellID)
-    if name then
-    
-    --TODO better code when i understand more the code
-      -- Create a useful description for the spell
-      local spellDesc = getSpellDescription(spellID) or "No Description"    
-      local desc = ""
-      if entry.desc and not CLASS_NAMES[entry.class] then
-        desc = "|cff9F3ED5" .. entry.desc .. "|r\n\n"
-      end
-      desc = desc .. spellDesc .. "\n\n|cffFF0000ID|r |cff798BDD" .. spellID .. "|r"
-      if entry.interval <= 0.5 then
-        desc = desc .. "\n|cffFF0000Interval|r Instant"
-      else
-        desc = desc .. "\n|cffFF0000Interval|r Merge every |cffFFFF00" .. tostring(entry.interval) .. "|r seconds"
-      end
-    
-      -- Add the spell to the UI
-      if CLASS_NAMES[entry.class] then
-        local index = CLASS_NAMES[entry.class][tonumber(entry.desc) or 0]
-        spells[entry.class].args[tostring(spellID)] = {
-          order = index * 2 + 1,
-          type = 'toggle',
-          name = name,
-          desc = desc,
-          get = SpamSpellGet,
-          set = SpamSpellSet,
+        -- Create the Category Header
+        global[category.category] = {
+            type = "header",
+            order = currentIndex,
+            name = category.category,
         }
-    elseif entry.desc == "Racial Spell" then
-      racetab[tostring(spellID)] = {
-          order = rcategoryOffsets[entry.class],
-          type = 'toggle',
-          name = name,
-          desc = desc,
-          get = SpamSpellGet,
-          set = SpamSpellSet,
-        }
-        rcategoryOffsets[entry.class] = rcategoryOffsets[entry.class] + 1
-      else
-        global[tostring(spellID)] = {
-          order = categoryOffsets[entry.class],
-          type = 'toggle',
-          name = name,
-          desc = desc,
-          get = SpamSpellGet,
-          set = SpamSpellSet,
-        }
-        categoryOffsets[entry.class] = categoryOffsets[entry.class] + 1
-      end
+        spamMergerGlobalSpellOrders[category.category] = currentIndex + 1
     end
-  end
 
+    local spamMergerRacialSpellOrders = {}
+    for i, rcategory in pairs(spamMergerRacialSpellCategories) do
+        local rcurrentIndex = i * 1000
+
+        -- TODO localization for rcategory.category?
+
+        -- Create the Category Header
+        racetab[rcategory.category] = {
+            type = "header",
+            order = rcurrentIndex,
+            name = rcategory.category,
+        }
+        spamMergerRacialSpellOrders[rcategory.category] = rcurrentIndex + 1
+    end
+
+    -- Update the UI
+    for spellID, entry in pairs(addon.merges) do
+        local name = C_Spell.GetSpellName(spellID)
+        if name then
+            -- Create a useful description for the spell
+            local desc = string.format(
+                "%s\n\n|cffFF0000%s|r |cff798BDD%s|r",
+                C_Spell.GetSpellDescription(spellID) or L["No Description"],
+                L["ID"],
+                spellID
+            )
+
+            -- TODO C_Spell.GetSpellDescription() sometimes returns "", what to do I do then ?
+
+            local firstSecondaryIdFound = true
+            for originalSpellId, replaceSpellId in pairs(addon.replaceSpellId) do
+                if replaceSpellId == spellID then
+                    if firstSecondaryIdFound then
+                        desc = desc .. "\n|cffFF0000" .. L["Secondary ID(s)"] .. "|r |cff798BDD" .. originalSpellId
+                        firstSecondaryIdFound = false
+                    else
+                        desc = desc .. ", " .. originalSpellId
+                    end
+                end
+            end
+            if not firstSecondaryIdFound then
+                desc = desc .. "|r"
+            end
+            -- TODO replacement spells without explicit merging entries are not displayed here
+
+            -- Add the spell to the UI
+            if CLASS_NAMES[entry.category] then
+                local index = CLASS_NAMES[entry.category][tonumber(entry.desc) or 0]
+                spells[entry.category].args[tostring(spellID)] = {
+                    order = index * 2 + 1,
+                    name = name,
+                    desc = desc,
+                    type = "range",
+                    min = 0,
+                    max = 5,
+                    step = 0.1,
+                    get = SpamMergerGetSpellInterval,
+                    set = SpamMergerSetSpellInterval,
+                }
+            elseif entry.racial_spell then
+                racetab[tostring(spellID)] = {
+                    order = spamMergerRacialSpellOrders[entry.category],
+                    name = name,
+                    desc = desc,
+                    type = "range",
+                    min = 0,
+                    max = 5,
+                    step = 0.1,
+                    get = SpamMergerGetSpellInterval,
+                    set = SpamMergerSetSpellInterval,
+                }
+                spamMergerRacialSpellOrders[entry.category] = spamMergerRacialSpellOrders[entry.category] + 1
+            else
+                global[tostring(spellID)] = {
+                    order = spamMergerGlobalSpellOrders[entry.category],
+                    name = name,
+                    desc = desc,
+                    type = "range",
+                    min = 0,
+                    max = 5,
+                    step = 0.1,
+                    get = SpamMergerGetSpellInterval,
+                    set = SpamMergerSetSpellInterval,
+                }
+                spamMergerGlobalSpellOrders[entry.category] = spamMergerGlobalSpellOrders[entry.category] + 1
+            end
+        end
+    end
 end
 
 local function ItemToggleAll(info)

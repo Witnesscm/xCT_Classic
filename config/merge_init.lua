@@ -9,137 +9,75 @@
  [=====================================]
  [  Author: Dandraffbal-Stormreaver US ]
  [  xCT+ Version 4.x.x                 ]
- [  ©2020. All Rights Reserved.        ]
+ [  ©2010-2025 All Rights Reserved.    ]
  [====================================]]
 
-local ADDON_NAME, addon = ...
+local _, addon = ...
 
 addon.merges = {}
-addon.merge2h = {}
+addon.replaceSpellId = {}
 
 do
-	local _debug_working = false
-	local _working = {}
+    local _working_category = ""
+    local _working_category_order = 0
+    local _working_desc = ""
 
-	local function class(name)
-		_working.class = tonumber(name) or name
-	end
+    -- Switches to a class
+    local function class(name)
+        _working_category = name
+        _working_category_order = _working_category_order + 1
+    end
 
-	local function spec(id)
-		_working.desc = tonumber(id) or id
-	end
+    -- Switches to a spec of a class (set before)
+    local function spec(id)
+        _working_desc = tonumber(id) or id
+        _working_category_order = _working_category_order + 1
+    end
 
-	-- spell helper
+    -- Switches to another header
+    local function header(title)
+        _working_category = title
+        _working_desc = ""
+        _working_category_order = _working_category_order + 1
+    end
 
-	-- for spell, but the second arg
-	local function spell_2(interval)
-		_debug_working = false
-		interval = tonumber(interval)
-		-- Create the spell here
-		addon.merges[_working.spellId] = {
-			class = _working.class or "ITEM",
-			interval = interval or 3,
-			desc = _working.desc,
-			prep = _working.prep or interval or 3,
-		}
-	end
+    -- Adds a spell to the merge list
+    -- Either call class() & spec() or header() before!
+    local function spell(id, interval)
+        addon.merges[id] = {
+            category = _working_category,
+            categoryOrder = _working_category_order, -- doesnt matter
+            interval = tonumber(interval) or interval,
+            desc = _working_desc, -- its the spec ID
+        }
+    end
 
-	-- Adds a class spell to the merge list
-	local function spell(id)
+    -- Adds a merge for a racial spell
+    -- Call header() before!
+    local function racial_spell(id, interval)
+        addon.merges[id] = {
+            category = _working_category,
+            categoryOrder = _working_category_order,
+            interval = tonumber(interval) or interval,
+            racial_spell = true,
+        }
+    end
 
-		-- Leave this in so you don't shoot yourself in the foot
-		if _debug_working then error "finish your first spell" end
-		_debug_working = true
+    -- Adds an item to the merge list
+    -- Call header() before!
+    local function item(id, interval)
+        addon.merges[id] = {
+            category = _working_category,
+            categoryOrder = _working_category_order,
+            interval = tonumber(interval) or interval,
+        }
+    end
 
-		_working.spellId = tonumber(id) or id
-		return spell_2
-	end
-	
-	-- rspell for race spells
-	
-	local _debug_working_race = false
-	local _working_race = {}
-	
-	local function race(name)
-		_working_race.race = name
-	end
-	
-	-- for spell, but the second arg
-	local function rspell_2(interval)
-		_debug_working_race = false
-		interval = tonumber(interval)
-		-- Create the spell here
-		addon.merges[_working_race.spellId] = {
-			class = _working_race.race or "ITEM",
-			interval = interval or 3,
-			desc = "Racial Spell",
-			prep = _working_race.prep or interval or 3,
-		}
-	end
-	
-	local function rspell(id)
+    -- If spell with the "id" is found, use the "replacementId" instead
+    -- e. g. in order to merge multiple spell variants into one message
+    local function alias(id, replacementId)
+        addon.replaceSpellId[id] = replacementId
+    end
 
-		-- Leave this in so you don't shoot yourself in the foot
-		if _debug_working_race then error "finish your first spell" end
-		_debug_working_race = true
-		_working_race.spellId = tonumber(id) or id
-		return rspell_2
-	end
-
-	-- alias helper
-	local _debug_working_alias = false
-	local _working_alias
-
-	local function alias_2(id)
-		_debug_working_alias = false
-		addon.merge2h[_working_alias] = tonumber(id)
-	end
-
-	local function alias(id)
-
-		-- Leave this in so you don't shoot yourself in the foot
-		if _debug_working_alias then error "finish your first alias" end
-		_debug_working_alias = true
-
-		_working_alias = tonumber(id)
-		return alias_2
-	end
-
-	-- item helper
-	local _debug_working_item = false
-	local _working_item = {}
-
-	local function header(title)
-		_working_item.class = title
-	end
-
-	local function item_3(desc)
-		_debug_working_item = false
-		-- Create the spell here
-		addon.merges[_working_item.spellId] = {
-			class = _working_item.class or "ITEM",
-			interval = _working_item.interval or 3,
-			desc = desc,
-			prep = _working_item.prep or _working_item.interval or 3,
-		}
-	end
-
-	local function item_2(interval)
-		_working_item.interval = tonumber(interval)
-		return item_3
-	end
-
-	-- Adds a class spell to the merge list
-	local function item(id)
-
-		-- Leave this in so you don't shoot yourself in the foot
-		if _debug_working_item then error "finish your first item" end
-		_debug_working_item = true
-
-		_working_item.spellId = tonumber(id) or id
-		return item_2
-	end
-
-
-	addon.merge_helpers = {spell, class, spec, alias, item, header, race, rspell}
+    addon.merge_helpers = { spell, class, spec, alias, item, header, racial_spell }
 end

@@ -502,7 +502,7 @@ local spam_format = "%s%s x%s"
 function x:AddSpamMessage(framename, mergeID, message, colorname, interval, prep, ...)
 
 	-- Check for a Secondary Spell ID
-	mergeID = addon.merge2h[mergeID] or mergeID
+	mergeID = addon.replaceSpellId[mergeID] or mergeID
 
 	local heap, stack = spamHeap[framename], spamStack[framename]
 	if heap[mergeID] then
@@ -513,15 +513,15 @@ function x:AddSpamMessage(framename, mergeID, message, colorname, interval, prep
 			heap[mergeID].last = now
 		end
 	else
-		local db = addon.defaults.profile.spells.merge[mergeID]
+		local db = x.db.profile.spells.merge[mergeID] or addon.merges[mergeID]
 		heap[mergeID] = {
 			-- last update
 			last = now,
 
 			-- how often to update
-			update = interval or (db and db.interval) or 3,
+			update = interval or (db and db.interval) or 0.5,
 
-			prep = prep or (db and db.prep) or interval or 3,
+			prep = prep or (db and db.prep) or interval or 0.5,
 
 			-- entries to merge
 			entries = {

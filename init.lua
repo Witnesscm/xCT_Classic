@@ -18,7 +18,7 @@ local noop = function() end
 local AddonName, addon = ...
 addon.engine = LibStub("AceAddon-3.0"):NewAddon(AddonName, "AceConsole-3.0")
 
-xCT_Plus = addon.engine
+xCT_Plus = addon
 
 -- No Operation
 addon.noop = noop
