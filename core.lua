@@ -283,41 +283,6 @@ function x.CleanUpForLegion()
   ReloadUI()
 end
 
-local getSpellDescription
-do
-  local tooltip = CreateFrame('GameTooltip', 'xCT_SpellDescriptionTooltip', nil, 'GameTooltipTemplate')
-  tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
-
-  local Descriptions, description = { }, nil
-  
-  function getSpellDescription(spellId)
-    if Descriptions[spellId] then
-      return Descriptions[spellId]
-    end
-
-    tooltip:ClearLines()
-    tooltip:SetSpellByID(spellId)
-    
-    local font
-    for i=4,1,-1 do
-      font = _G['xCT_SpellDescriptionTooltipTextLeft'..i]
-      if font then
-        break
-      end
-    end
-
-    description = font:GetText()
-
-    if description == "" then
-      description = "No Description"
-    end
-
-    Descriptions[spellId] = description
-
-    return description
-  end
-end
-
 local CLASS_NAMES = {
   ["DEATHKNIGHT"] = {
     [250] = 1,   -- Blood
@@ -449,7 +414,7 @@ function x:UpdateSpamSpells()
         for spec, index in pairs(specs) do
             local name, _ = "All Specializations"
             if index ~= 0 then
-                _, name = GetSpecializationInfoByID(spec)
+                name = x.specName[spec]
             end
 
             spells[class].args["specHeader" .. index] = {
