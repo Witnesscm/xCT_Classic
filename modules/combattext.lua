@@ -21,6 +21,9 @@ local x = addon.engine
 local _, _G, sformat, mfloor, mabs, ssub, smatch, sgsub, s_upper, s_lower, string, tinsert, tremove, ipairs, pairs, print, tostring, tonumber, select, unpack =
   nil, _G, string.format, math.floor, math.abs, string.sub, string.match, string.gsub, string.upper, string.lower, string, table.insert, table.remove, ipairs, pairs, print, tostring, tonumber, select, unpack
 
+local COMBAT_TEXT_LOW_HEALTH_THRESHOLD = COMBAT_TEXT_LOW_HEALTH_THRESHOLD or CombatTextConstants.LowHealthThreshold
+local COMBAT_TEXT_LOW_MANA_THRESHOLD = COMBAT_TEXT_LOW_MANA_THRESHOLD or CombatTextConstants.LowManaThreshold
+
 --UTF8 Functions
 local utf8 = {
   len = string.utf8len,

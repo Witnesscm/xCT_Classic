@@ -25,13 +25,23 @@ local L = addon.L
 local LSM = LibStub("LibSharedMedia-3.0");
 
 -- Intercept Messages Sent by other Add-Ons that use CombatText_AddMessage
-hooksecurefunc('CombatText_AddMessage', function(message, scrollFunction, r, g, b, displayType, isStaggered)
-  if not x.db.profile.blizzardFCT.enableFloatingCombatText then
-    local lastEntry = COMBAT_TEXT_TO_ANIMATE[ #COMBAT_TEXT_TO_ANIMATE ]
-    CombatText_RemoveMessage(lastEntry)
-    x:AddMessage("general", message, {r, g, b})
-  end
-end)
+if CombatText_AddMessage then
+    hooksecurefunc('CombatText_AddMessage', function(message, scrollFunction, r, g, b, displayType, isStaggered)
+        if not x.db.profile.blizzardFCT.enableFloatingCombatText then
+            local lastEntry = COMBAT_TEXT_TO_ANIMATE[#COMBAT_TEXT_TO_ANIMATE]
+            CombatText_RemoveMessage(lastEntry)
+            x:AddMessage("general", message, { r, g, b })
+        end
+    end)
+elseif CombatText then
+    hooksecurefunc(CombatText, "AddMessage", function(self, message, scrollFunction, r, g, b, displayType, isStaggered)
+        if not x.db.profile.blizzardFCT.enableFloatingCombatText then
+            local lastEntry = self.activeFontStrings[#self.activeFontStrings]
+            self:ReleaseFontString(lastEntry)
+            x:AddMessage("general", message, { r, g, b })
+        end
+    end)
+end
 
 -- Interface - Addons (Ace3 Blizzard Options)
 x.blizzardOptions = {

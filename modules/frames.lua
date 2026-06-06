@@ -1147,20 +1147,20 @@ function x.TestMoreUpdate(self, elapsed)
 				if x.db.profile.frames[output].customColor then
 					color = x.db.profile.frames[output].fontColor
 				end
-				if COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" then
-					local message = UnitName("player")
-					local realm = ""
-					if x.db.profile.frames["healing"].enableRealmNames then realm = "-"..GetRealmName() end
-					if x.db.profile.frames["healing"].enableClassNames then
-						message = sformat("|c%s%s%s|r", RAID_CLASS_COLORS[select(2,UnitClass("player"))].colorStr, message, realm)
-					end
-					if x.db.profile.spells.mergeHealing and random(2) % 2 == 0 then
-						message = sformat("%s |cffFFFF00x%s|r", message, random(17)+1)
-					end
-					x:AddMessage(output, "+"..x:Abbreviate(random(90000),"healing") .. " "..message, color)
-				else
-					x:AddMessage(output, "+"..x:Abbreviate(random(90000),"healing"), color)
-				end
+				-- if COMBAT_TEXT_SHOW_FRIENDLY_NAMES == "1" then
+				-- 	local message = UnitName("player")
+				-- 	local realm = ""
+				-- 	if x.db.profile.frames["healing"].enableRealmNames then realm = "-"..GetRealmName() end
+				-- 	if x.db.profile.frames["healing"].enableClassNames then
+				-- 		message = sformat("|c%s%s%s|r", RAID_CLASS_COLORS[select(2,UnitClass("player"))].colorStr, message, realm)
+				-- 	end
+				-- 	if x.db.profile.spells.mergeHealing and random(2) % 2 == 0 then
+				-- 		message = sformat("%s |cffFFFF00x%s|r", message, random(17)+1)
+				-- 	end
+				-- 	x:AddMessage(output, "+"..x:Abbreviate(random(90000),"healing") .. " "..message, color)
+				-- else
+				x:AddMessage(output, "+"..x:Abbreviate(random(90000),"healing"), color)
+				-- end
 			elseif self == x.frames["power"] and random(4) % 4 == 0 then
 				local output = "power"
 				if not x.db.profile.frames[output].enabledFrame then
